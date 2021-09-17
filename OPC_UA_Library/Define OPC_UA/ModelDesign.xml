@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<opc:ModelDesign
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:opc="http://opcfoundation.org/UA/ModelDesign.xsd"
+xmlns:ua="http://opcfoundation.org/UA/"
+xmlns:uax="http://opcfoundation.org/UA/2008/02/Types.xsd"
+xmlns="http://opcfoundation.org/GPPlant"
+TargetNamespace="http://opcfoundation.org/GPPlant"
+>
+
+  <opc:Namespaces>
+    <opc:Namespace Name="OpcUa" Prefix="Opc.Ua" XmlNamespace="http://opcfoundation.org/UA/2008/02/Types.xsd">http://opcfoundation.org/UA/</opc:Namespace>
+    <opc:Namespace Name="GPPlant" Prefix="GPPlant">http://opcfoundation.org/GPPlant</opc:Namespace>
+  </opc:Namespaces>
+
+  <!--
+  Define generic base types for the various controllers, sensors and actuators used in the model.
+  -->
+  <opc:ObjectType SymbolicName="Mitsubishi" BaseType="ua:BaseObjectType">
+    <opc:Description>Mitsubishi PLC that controls peripheral devices.</opc:Description>   
+  </opc:ObjectType>   
+
+<!--
+  Define concrete types for the various controllers, sensors and actuators used in the model.
+  -->
+  <opc:ObjectType SymbolicName="PLC1Type" BaseType="Mitsubishi">
+    <opc:Description>A PLC that reoprts peripheral devices results.</opc:Description>
+    <opc:Children>
+      <opc:Variable SymbolicName="Connection" DataType="ua:Boolean" ValueRank="Scalar" TypeDefinition="ua:TwoStateDiscreteType" AccessLevel="ReadWrite" />
+    </opc:Children>
+  </opc:ObjectType>
+
+  	<!--
+  Define concrete types for the components contained in the Batch Plant.
+  These middle tier types could be omitted and declared as folders within the boiler type.
+  However, doing so would not produce a strongly typed class.
+  -->
+
+  	<opc:ObjectType SymbolicName="CoaterType" BaseType="ua:FolderType">
+		<opc:Children>
+			<opc:Object SymbolicName="PLC1" TypeDefinition="PLC1Type" SupportsEvents="true">
+				<opc:BrowseName>PLC1</opc:BrowseName>
+			</opc:Object>
+				
+		</opc:Children>
+		<opc:References>
+			<opc:Reference>
+				<opc:ReferenceType>ua:HasNotifier</opc:ReferenceType>
+				<opc:TargetId>CoaterType_PLC1</opc:TargetId>
+			</opc:Reference>
+		</opc:References>
+	</opc:ObjectType>
+
+    
+<!--
+  Declare the batch plant type along with all of the references between the different components.
+  Adding references between components requires that they be overriden. 
+  Overridden nodes only need to delcare the correct NodeType and the SymbolicName; all other
+  parameters are initialized from the original declaration. Any parameters that are explicitly
+  specified replace the original declaration and are used even if the original declaration
+  is changed.
+  
+  References are specified by constructing the SymbolicIds for the components by inserting
+  a '_' between each SymbolicName. This means that a '_' cannot be part of a SymbolicName.
+  -->
+	<opc:ObjectType SymbolicName="GPPlantType" BaseType="ua:BaseObjectType" SupportsEvents="true">
+		<opc:Description>A production batch plant.</opc:Description>
+		<opc:Children>
+
+			<opc:Object SymbolicName="Coater" TypeDefinition="CoaterType" SupportsEvents="true">
+				<opc:BrowseName>MyCoater</opc:BrowseName>
+				<opc:Children>
+					<opc:Object SymbolicName="PLC1">
+						<opc:Children>
+							<opc:Variable SymbolicName="Output" />
+						</opc:Children>                    
+					</opc:Object>	
+								
+				</opc:Children>
+			</opc:Object>
+			<opc:Method SymbolicName="StartProcess" ModellingRule="Mandatory"></opc:Method>
+      <opc:Method SymbolicName="StopProcess" ModellingRule="Mandatory"></opc:Method>
+
+		</opc:Children>
+
+		<opc:References>
+			<opc:Reference>
+				<opc:ReferenceType>ua:HasNotifier</opc:ReferenceType>
+				<opc:TargetId>GPPlantType_Coater</opc:TargetId>
+			</opc:Reference>			
+		</opc:References>
+	</opc:ObjectType>
+
+	<!--
+  Declare an instance of a Hydrogen Machine.
+  Normally instances are created by program logic instead of being part of the model.
+  This is provided as an example of how to do it when there is a need for persistent instances.
+  Note that the DisplayNames are overridden for the base level nodes.
+  -->
+	<opc:Object SymbolicName="GPPlant1" TypeDefinition="GPPlantType" SupportsEvents="true">
+		<opc:BrowseName>GP Plant #1</opc:BrowseName>
+		<opc:Children>
+			<opc:Object SymbolicName="Coater" TypeDefinition="CoaterType" SupportsEvents="true">
+				<opc:DisplayName>PLC</opc:DisplayName>
+			</opc:Object>    
+		</opc:Children>
+
+		<!--
+    Link the instance back to the ObjectsFolder
+    -->
+		<opc:References>
+			<opc:Reference IsInverse="true">
+				<opc:ReferenceType>ua:Organizes</opc:ReferenceType>
+				<opc:TargetId>ua:ObjectsFolder</opc:TargetId>
+			</opc:Reference>
+		</opc:References>
+	</opc:Object>
+</opc:ModelDesign>
+
