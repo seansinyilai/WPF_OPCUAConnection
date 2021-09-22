@@ -122,8 +122,8 @@ namespace ToConnectOPCUA.Classes
                     try
                     {
                         /*
-                         * 此处仅作示例代码  所以不修改节点树 故将UpdateNodesAttribute()方法跳过
-                         * 在实际业务中  请根据自身的业务需求决定何时修改节点菜单树
+                    * 此處僅作示例代碼  所以不修改節點樹 故將UpdateNodesAttribute()方法跳過
+                         * 在實際業務中  請根據自身的業務需求決定何時修改節點菜單樹
                          */
                         int count = 0;
                         //配置发生更改时,重新生成节点树
@@ -132,17 +132,20 @@ namespace ToConnectOPCUA.Classes
                             cfgCount = count;
                             List<OpcuaNode> nodes = new List<OpcuaNode>();
                             /*
-                             * 此处有想过删除整个菜单树,然后重建 保证各个NodeId仍与原来的一直
-                             * 但是 后来发现这样会导致原来的客户端订阅信息丢失  无法获取订阅数据
-                             * 所以  只能一级级的检查节点  然后修改属性
+                          
+                             * 此處有想過刪除整個菜單樹,然後重建 保證各個NodeId仍與原來的一直
+                             * 但是 後來發現這樣會導致原來的客戶端訂閱信息丟失  無法獲取訂閱數據
+                             * 所以  只能一級級的檢查節點  然後修改屬性
                              */
                             //  UpdateNodesAttribute(nodes);
                         }
-                        //模拟获取实时数据
+
+                        //模擬獲取實時數據
                         BaseDataVariableState node = null;
                         /*
-                         * 在实际业务中应该是根据对应的标识来更新固定节点的数据
-                         * 这里  我偷个懒  全部测点都更新为一个新的随机数
+                    
+                         * 在實際業務中應該是根據對應的標識來更新固定節點的數據
+                         * 這裡  我偷個懶  全部測點都更新為一個新的隨機數
                          */
                         foreach (var item in _nodeDic)
                         {
@@ -156,7 +159,7 @@ namespace ToConnectOPCUA.Classes
                                 node.Value = RandomLibrary.GetRandomInt(0, 99);
                             }
                             node.Timestamp = DateTime.Now;
-                            //变更标识  只有执行了这一步,订阅的客户端才会收到新的数据
+                            //變更標識  只有執行了這一步,訂閱的客戶端才會收到新的數據
                             node.ClearChangeMasks(SystemContext, false);
                         }
                         //1秒更新一次
@@ -223,7 +226,8 @@ namespace ToConnectOPCUA.Classes
                     {
                         /// 如果不是資料夾
                         BaseDataVariableState variable = CreateVariable(parent, node.NodePath, node.NodeName, node.DataType, ValueRanks.Scalar);
-                        //此处需要注意  目录字典是以目录路径作为KEY 而 测点字典是以测点ID作为KEY  为了方便更新实时数据
+
+                        //此處需要注意  目錄字典是以目錄路徑作為KEY 而 測點字典是以測點ID作為KEY  為了方便更新實時數據
                         _nodeDic.Add(node.NodeId.ToString(), variable);
                     }
                 }
