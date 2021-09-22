@@ -123,7 +123,7 @@ namespace ToConnectOPCUA.Classes
                     {
                         /*
                     * 此處僅作示例代碼  所以不修改節點樹 故將UpdateNodesAttribute()方法跳過
-                         * 在實際業務中  請根據自身的業務需求決定何時修改節點菜單樹
+                         * 在實際業務中  請根據自身的業務需求決定何時修改節點
                          */
                         int count = 0;
                         //配置发生更改时,重新生成节点树
@@ -145,7 +145,7 @@ namespace ToConnectOPCUA.Classes
                         /*
                     
                          * 在實際業務中應該是根據對應的標識來更新固定節點的數據
-                         * 這裡  我偷個懶  全部測點都更新為一個新的隨機數
+                         * 全部測點都更新為一個新的隨機數
                          */
                         foreach (var item in _nodeDic)
                         {
@@ -168,7 +168,7 @@ namespace ToConnectOPCUA.Classes
                     catch (Exception ex)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("更新OPC-UA节点数据触发异常:" + ex.Message);
+                        Console.WriteLine("更新OPC-UA節點數據觸發異常:" + ex.Message);
                         Console.ResetColor();
                     }
                 }
