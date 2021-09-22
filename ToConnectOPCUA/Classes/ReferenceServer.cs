@@ -2,22 +2,43 @@
 using Opc.Ua.Server;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ToConnectOPCUA.Classes
 {
-    public class ReferenceServer <T>: ReverseConnectServer where T : OpcuaNode
+    public class ReferenceServer <T>: ReverseConnectServer, INotifyPropertyChanged where T : OpcuaNode
     {
         #region Private Fields
         private ICertificateValidator m_userCertificateValidator;
-        private List<OpcuaNode> tmpObj;
+        private List<OpcuaNode> _tmpObj;
+
+        public List<OpcuaNode> TmpObj
+        {
+            get { return _tmpObj; }
+            set { _tmpObj = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private ReferenceNodeManager<OpcuaNode> _NodeManager;
+
+        public ReferenceNodeManager<OpcuaNode> NodeManager
+        {
+            get { return _NodeManager; }
+            set { _NodeManager = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         #endregion
         public ReferenceServer(List<T> nodeDataStructObj)
         {
-            tmpObj = nodeDataStructObj.ToList<OpcuaNode>();
+            TmpObj = nodeDataStructObj.ToList<OpcuaNode>();
         }
 
         protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
@@ -25,9 +46,9 @@ namespace ToConnectOPCUA.Classes
             Utils.Trace("Creating the Node Managers.");
 
             List<INodeManager> nodeManagers = new List<INodeManager>();
-
+            NodeManager = new ReferenceNodeManager<OpcuaNode>(server, configuration, TmpObj);
             // create the custom node managers.
-            nodeManagers.Add(new ReferenceNodeManager<OpcuaNode>(server, configuration, tmpObj));
+            nodeManagers.Add(NodeManager);
 
             // create master node manager.
             return new MasterNodeManager(server, configuration, null, nodeManagers.ToArray());
@@ -295,6 +316,14 @@ namespace ToConnectOPCUA.Classes
             }
         }
         #endregion
+        #region PropertyChangedEventHandler
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion PropertyChangedEventHandler
 
     }
 }

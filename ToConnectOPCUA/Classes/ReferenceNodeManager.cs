@@ -3,8 +3,10 @@ using Opc.Ua.Server;
 using OPCUA_MethodOfCoding.Classes.Helper;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ using System.Xml;
 
 namespace ToConnectOPCUA.Classes
 {
-    public class ReferenceNodeManager<T>: CustomNodeManager2 where T : OpcuaNode
+    public class ReferenceNodeManager <T> : CustomNodeManager2, INotifyPropertyChanged where T : OpcuaNode 
     {
         #region Private Fields
         /// <summary>
@@ -33,6 +35,20 @@ namespace ToConnectOPCUA.Classes
         /// 目录集合,修改菜单树时需要(我们需要知道哪些菜单需要修改,哪些需要新增,哪些需要删除)
         /// </summary>
         private Dictionary<string, FolderState> _folderDic = new Dictionary<string, FolderState>();
+
+
+        public Dictionary<string, BaseDataVariableState> _GotDictionary;
+        public Dictionary<string, BaseDataVariableState> GotDictionary
+        {
+            get {
+                return _GotDictionary.ToDictionary(property => property.Key, property => property.Value);
+            }
+            set {
+                _GotDictionary = value;                
+                NotifyPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region CTOR
@@ -161,7 +177,10 @@ namespace ToConnectOPCUA.Classes
                             node.Timestamp = DateTime.Now;
                             //變更標識  只有執行了這一步,訂閱的客戶端才會收到新的數據
                             node.ClearChangeMasks(SystemContext, false);
+                            
                         }
+                       // var dict = value.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(value));
+                        GotDictionary = _nodeDic;
                         //1秒更新一次
                         Thread.Sleep(1000 * 1);
                     }
@@ -660,6 +679,13 @@ namespace ToConnectOPCUA.Classes
 
             return null;
         }
+        #region PropertyChangedEventHandler
+        public event PropertyChangedEventHandler PropertyChanged;
 
+        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion PropertyChangedEventHandler
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Opc.Ua;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,6 +38,7 @@ namespace ToConnectOPCUA.Classes
         /// 節點類型
         /// </summary>
         public abstract NodeId DataType { get; set; }
+
     }
     public enum NodeType
     {

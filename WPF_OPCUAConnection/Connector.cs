@@ -4,8 +4,10 @@ using OPCUA_MethodOfCoding;
 using OPCUA_MethodOfCoding.Classes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,8 +16,30 @@ using ToConnectOPCUA.Classes;
 
 namespace WPF_OPCUAConnection
 {
-    public class Connector
+    public class Connector : INotifyPropertyChanged
     {
+        private OPCUA_Server _MyService;
+
+        public OPCUA_Server MyService
+        {
+            get { return _MyService; }
+            set
+            {
+                _MyService = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public Dictionary<string, BaseDataVariableState> GotValuesDictionary
+        {
+            get
+            {
+
+                return MyService?.RefServer?.NodeManager?.GotDictionary;
+            }
+        }
+
+
         public Connector()
         {
             #region XML
@@ -30,11 +54,11 @@ namespace WPF_OPCUAConnection
             #endregion
 
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
-           
-            OPCUA_Server myService = new OPCUA_Server(
-                new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
-                new List<NodeDataStruct>()
-                {
+
+            MyService = new OPCUA_Server(
+            new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
+            new List<NodeDataStruct>()
+            {
                   new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
                   new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
                   new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
@@ -44,7 +68,8 @@ namespace WPF_OPCUAConnection
                   new NodeDataStruct(){NodeId=114,NodeName="Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
                   new NodeDataStruct(){NodeId=121,NodeName="Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
                   new NodeDataStruct(){NodeId=122,NodeName="Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
-                }.ToList<OpcuaNode>()));
+            }.ToList<OpcuaNode>()));
+
         }
         //public List<OpcuaNode> CreateNodeTree(List<ListNodeStruct> nodeList) 
         //{
@@ -85,5 +110,14 @@ namespace WPF_OPCUAConnection
         {
             return ServiceResult.Good;
         }
+
+        #region PropertyChangedEventHandler
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion PropertyChangedEventHandler
     }
 }
