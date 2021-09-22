@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\GP_NameSpace.cs" />
+    <Compile Include="Classes\ListNodeStruct.cs" />
     <Compile Include="Classes\NodeDataStruct.cs" />
     <Compile Include="Classes\OpcuaNode.cs" />
     <Compile Include="Classes\RandomLibrary.cs" />

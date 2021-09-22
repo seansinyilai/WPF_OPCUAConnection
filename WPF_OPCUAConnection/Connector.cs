@@ -32,7 +32,7 @@ namespace WPF_OPCUAConnection
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
            
             OPCUA_Server myService = new OPCUA_Server(
-                new ToConnectOPCUA.Classes.ReferenceServer<NodeDataStruct>(
+                new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
                 new List<NodeDataStruct>()
                 {
                   new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
@@ -44,9 +44,38 @@ namespace WPF_OPCUAConnection
                   new NodeDataStruct(){NodeId=114,NodeName="Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
                   new NodeDataStruct(){NodeId=121,NodeName="Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
                   new NodeDataStruct(){NodeId=122,NodeName="Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
-                }));
+                }.ToList<OpcuaNode>()));
         }
+        //public List<OpcuaNode> CreateNodeTree(List<ListNodeStruct> nodeList) 
+        //{
+        //    int i = 1;
+        //    string parentPath = string.Empty;
+        //    List<NodeDataStruct> tmp = new List<NodeDataStruct>();
+        //    tmp.Add(new NodeDataStruct() { NodeId = 1, NodeName = "GRC", NodePath = "1", NodeType = NodeType.GRC, ParentPath = "", IsTerminal = false });
+        //    nodeList.ForEach(x =>
+        //    {
+        //        tmp.Add(new NodeDataStruct() { NodeId = Convert.ToInt32(string.Format("{0}{1}", 1,i)) , NodeName = x.MainFolderName, NodePath = string.Format("{0}{1}", 1, i), NodeType = (NodeType)(i+1), ParentPath = "1", IsTerminal = false });
+        //        parentPath = string.Format("{0}{1}", 1, i);
+        //        x.SubNodeNames.ForEach(y =>
+        //        {
+        //            if (y.IFItIsNotFolder)
+        //            {
+        //                tmp.Add(new NodeDataStruct() { NodeId = Convert.ToInt32(string.Format("{0}{1}", 11, i)), NodeName = y.SubNodeNames, NodePath = string.Format("{0}{1}", 11, i), NodeType = y.NodeType, ParentPath = parentPath, IsTerminal = y.IFItIsNotFolder,DataType = y.DataType });
 
+        //            }
+        //            else
+        //            {
+        //                tmp.Add(new NodeDataStruct() { NodeId = Convert.ToInt32(string.Format("{0}{1}", 11, i)), NodeName = y.SubNodeNames, NodePath = string.Format("{0}{1}", 11, i), NodeType = y.NodeType, ParentPath = parentPath, IsTerminal = y.IFItIsNotFolder });
+
+        //            }
+
+        //        });
+
+        //        i++;
+        //    });
+
+        //    return new List<OpcuaNode>();
+        //}
         private ServiceResult OnStopProcess(ISystemContext context, MethodState method, IList<object> inputArguments, IList<object> outputArguments)
         {
             return ServiceResult.Good;

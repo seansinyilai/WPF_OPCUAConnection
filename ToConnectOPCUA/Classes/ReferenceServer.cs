@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace ToConnectOPCUA.Classes
 {
-    public class ReferenceServer <T>: ReverseConnectServer where T : NodeDataStruct
+    public class ReferenceServer <T>: ReverseConnectServer where T : OpcuaNode
     {
         #region Private Fields
         private ICertificateValidator m_userCertificateValidator;
         private List<OpcuaNode> tmpObj;
         #endregion
-        public ReferenceServer(List<NodeDataStruct> nodeDataStructObj)
+        public ReferenceServer(List<T> nodeDataStructObj)
         {
             tmpObj = nodeDataStructObj.ToList<OpcuaNode>();
         }
