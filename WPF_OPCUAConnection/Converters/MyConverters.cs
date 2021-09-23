@@ -17,13 +17,13 @@ namespace WPF_OPCUAConnection.Converters
             //var json = JsonConvert.SerializeObject(value);
             //var result = JsonConvert.DeserializeObject<Dictionary<string, BaseDataVariableState>>(json);
             var dict = value.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(value));
-            var a = dict["Key"];
-            var b = dict["Value"] as BaseDataVariableState;
-            var c=  b.Value;
+            var a = dict["FieldsName"];
+            var b = dict["FieldsValue"];
+         
           //  var dict = value as Dictionary<string, BaseDataVariableState>;
             if (dict != null)
             {
-                return c;
+                return b;
             }
             throw new NotImplementedException();
         }

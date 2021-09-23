@@ -3,6 +3,7 @@ using Opc.Ua.Server;
 using OPCUA_MethodOfCoding.Classes.Helper;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
@@ -10,11 +11,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
 using System.Xml;
 
 namespace ToConnectOPCUA.Classes
 {
-    public class ReferenceNodeManager <T> : CustomNodeManager2, INotifyPropertyChanged where T : OpcuaNode 
+    public class ReferenceNodeManager<T> : CustomNodeManager2, INotifyPropertyChanged where T : OpcuaNode
     {
         #region Private Fields
         /// <summary>
@@ -27,6 +30,8 @@ namespace ToConnectOPCUA.Classes
         private UInt16 m_simulationInterval = 1000;
         private bool m_simulationEnabled = true;
         private List<T> nodes;
+        public Func<Dictionary<string, BaseDataVariableState>, bool> _actonDelegate;
+        public Thread CycleUpdateVal;
         /// <summary>
         /// 测点集合,实时数据刷新时,直接从字典中取出对应的测点,修改值即可
         /// </summary>
@@ -37,14 +42,27 @@ namespace ToConnectOPCUA.Classes
         private Dictionary<string, FolderState> _folderDic = new Dictionary<string, FolderState>();
 
 
-        public Dictionary<string, BaseDataVariableState> _GotDictionary;
-        public Dictionary<string, BaseDataVariableState> GotDictionary
+        public Dictionary<string, object> _GotDictionary = new Dictionary<string, object>();
+        //public Dictionary<string, BaseDataVariableState> GotDictionary
+        //{
+        //    get
+        //    {
+        //        return _GotDictionary.ToDictionary(property => property.Key, property => property.Value);
+        //    }
+        //    set
+        //    {
+        //        _GotDictionary = value;
+        //        NotifyPropertyChanged();
+        //    }
+        //}
+        private ObservableCollection<ValueDictionaryClass> _myDict;
+
+        public ObservableCollection<ValueDictionaryClass> MyDict 
         {
-            get {
-                return _GotDictionary.ToDictionary(property => property.Key, property => property.Value);
-            }
-            set {
-                _GotDictionary = value;                
+            get { return _myDict; }
+            set
+            {
+                _myDict = value;
                 NotifyPropertyChanged();
             }
         }
@@ -61,6 +79,7 @@ namespace ToConnectOPCUA.Classes
                 m_configuration = new ReferenceServerConfiguration();
             }
             nodes = nodeClass;
+            CycleUpdateVal = new Thread(UpdateVariableValue);
         }
         #endregion
 
@@ -117,7 +136,7 @@ namespace ToConnectOPCUA.Classes
                 try
                 {
                     CreateRoot(nodes, references);
-                    UpdateVariableValue();
+                    // UpdateVariableValue();
                 }
                 catch (Exception e)
                 {
@@ -128,70 +147,103 @@ namespace ToConnectOPCUA.Classes
         #endregion
 
         #region Looping Updating Values
-        
+
         private void UpdateVariableValue()
         {
-            Task.Run(() =>
+            //Task.Run(() =>
+            //{
+            while (true)
             {
-                while (true)
+                try
                 {
-                    try
+                    /*
+                * 此處僅作示例代碼  所以不修改節點樹 故將UpdateNodesAttribute()方法跳過
+                     * 在實際業務中  請根據自身的業務需求決定何時修改節點
+                     */
+                    int count = 0;
+                    //配置发生更改时,重新生成节点树
+                    if (count > 0 && count != cfgCount)
                     {
+                        cfgCount = count;
+                        List<OpcuaNode> nodes = new List<OpcuaNode>();
                         /*
-                    * 此處僅作示例代碼  所以不修改節點樹 故將UpdateNodesAttribute()方法跳過
-                         * 在實際業務中  請根據自身的業務需求決定何時修改節點
-                         */
-                        int count = 0;
-                        //配置发生更改时,重新生成节点树
-                        if (count > 0 && count != cfgCount)
-                        {
-                            cfgCount = count;
-                            List<OpcuaNode> nodes = new List<OpcuaNode>();
-                            /*
-                          
-                             * 此處有想過刪除整個菜單樹,然後重建 保證各個NodeId仍與原來的一直
-                             * 但是 後來發現這樣會導致原來的客戶端訂閱信息丟失  無法獲取訂閱數據
-                             * 所以  只能一級級的檢查節點  然後修改屬性
-                             */
-                            //  UpdateNodesAttribute(nodes);
-                        }
 
-                        //模擬獲取實時數據
-                        BaseDataVariableState node = null;
-                        /*
-                    
-                         * 在實際業務中應該是根據對應的標識來更新固定節點的數據
-                         * 全部測點都更新為一個新的隨機數
+                         * 此處有想過刪除整個菜單樹,然後重建 保證各個NodeId仍與原來的一直
+                         * 但是 後來發現這樣會導致原來的客戶端訂閱信息丟失  無法獲取訂閱數據
+                         * 所以  只能一級級的檢查節點  然後修改屬性
                          */
-                        foreach (var item in _nodeDic)
-                        {
-                            node = item.Value;
-                            if (item.Value.DataType == DataTypeIds.Boolean)
-                            {
-                                node.Value = Convert.ToBoolean(RandomLibrary.GetRandomInt(0, 2));
-                            }
-                            else if (item.Value.DataType == DataTypeIds.Double)
-                            {
-                                node.Value = RandomLibrary.GetRandomInt(0, 99);
-                            }
-                            node.Timestamp = DateTime.Now;
-                            //變更標識  只有執行了這一步,訂閱的客戶端才會收到新的數據
-                            node.ClearChangeMasks(SystemContext, false);
-                            
-                        }
-                       // var dict = value.GetType().GetProperties().ToDictionary(property => property.Name, property => property.GetValue(value));
-                        GotDictionary = _nodeDic;
-                        //1秒更新一次
-                        Thread.Sleep(1000 * 1);
+                        //  UpdateNodesAttribute(nodes);
                     }
-                    catch (Exception ex)
+
+                    //模擬獲取實時數據
+                    BaseDataVariableState node = null;
+                    Application.Current.Dispatcher.Invoke((Action)delegate
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("更新OPC-UA節點數據觸發異常:" + ex.Message);
-                        Console.ResetColor();
+                        MyDict?.Clear();
+                       
+                        MyDict = new ObservableCollection<ValueDictionaryClass>();
+                    });
+
+                    /*                    
+                     * 在實際業務中應該是根據對應的標識來更新固定節點的數據
+                     * 全部測點都更新為一個新的隨機數
+                     */
+                    foreach (var item in _nodeDic)
+                    {
+                        node = item.Value;
+                        if (item.Value.DataType == DataTypeIds.Boolean)
+                        {
+                            node.Value = Convert.ToBoolean(RandomLibrary.GetRandomInt(0, 2));
+                        }
+                        else if (item.Value.DataType == DataTypeIds.Double)
+                        {
+                            node.Value = RandomLibrary.GetRandomInt(0, 99);
+                        }
+                        node.Timestamp = DateTime.Now;
+                        node.ClearChangeMasks(SystemContext, false);//變更標識  只有執行了這一步,訂閱的客戶端才會收到新的數據                            
+                        Application.Current.Dispatcher.Invoke((Action)delegate
+                        {
+                            MyDict.Add(new ValueDictionaryClass() { FieldsName = node.NodeId.Identifier.ToString(), FieldsValue = node.Value });
+                 
+                        });
                     }
+
+                    if (_GotDictionary.Count != 0 && _nodeDic.Count != 0)
+                    {
+                        var dict3 = _nodeDic.Where(entry => _GotDictionary[entry.Key] != entry.Value)
+                                               .ToDictionary(entry => entry.Key, entry => entry.Value);
+                        if (dict3.Count > 0) SpinWait.SpinUntil(() => _actonDelegate(dict3));                       
+                    }
+                    _GotDictionary.Clear();
+                    foreach (var key in MyDict)
+                    {
+                        _GotDictionary.Add(key.FieldsName, key.FieldsValue);
+                    }
+                    //if (_GotDictionary.Count != 0 && _nodeDic.Count != 0)
+                    //{
+
+                    //    var dict3 = _nodeDic.Where(entry => _GotDictionary[entry.Key] != entry.Value)
+                    //                           .ToDictionary(entry => entry.Key, entry => entry.Value);
+                    //    if (dict3.Count > 0) SpinWait.SpinUntil(() => _actonDelegate(dict3));                  
+                    //}
+                    //_GotDictionary.Clear();
+                    //foreach (var key in _nodeDic.Keys)
+                    //{
+                    //    _GotDictionary.Add(key, _nodeDic[key]);
+                    //}
+                    //GotDictionary = _nodeDic;
+
+                    //1秒更新一次
+                    SpinWait.SpinUntil(() => false, 1000);
                 }
-            });
+                catch (Exception ex)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("更新OPC-UA節點數據觸發異常:" + ex.Message);
+                    Console.ResetColor();
+                }
+            }
+            //});
         }
         #endregion
 
@@ -248,6 +300,7 @@ namespace ToConnectOPCUA.Classes
 
                         //此處需要注意  目錄字典是以目錄路徑作為KEY 而 測點字典是以測點ID作為KEY  為了方便更新實時數據
                         _nodeDic.Add(node.NodeId.ToString(), variable);
+                       
                     }
                 }
                 catch (Exception ex)

@@ -4,6 +4,7 @@ using OPCUA_MethodOfCoding;
 using OPCUA_MethodOfCoding.Classes;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -29,17 +30,13 @@ namespace WPF_OPCUAConnection
                 NotifyPropertyChanged();
             }
         }
-
-        public Dictionary<string, BaseDataVariableState> GotValuesDictionary
+        public ReferenceNodeManager<OpcuaNode> ReferenceNodeManagerObj
         {
             get
             {
-
-                return MyService?.RefServer?.NodeManager?.GotDictionary;
+                return MyService?.RefServer?.NodeManager;
             }
         }
-
-
         public Connector()
         {
             #region XML
@@ -69,38 +66,20 @@ namespace WPF_OPCUAConnection
                   new NodeDataStruct(){NodeId=121,NodeName="Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
                   new NodeDataStruct(){NodeId=122,NodeName="Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
             }.ToList<OpcuaNode>()));
-
+            ReferenceNodeManagerObj._actonDelegate = new Func<Dictionary<string, BaseDataVariableState>, bool>(GetNodeValue);
+            ReferenceNodeManagerObj.CycleUpdateVal.IsBackground = true;
+            ReferenceNodeManagerObj.CycleUpdateVal.Start();
         }
-        //public List<OpcuaNode> CreateNodeTree(List<ListNodeStruct> nodeList) 
-        //{
-        //    int i = 1;
-        //    string parentPath = string.Empty;
-        //    List<NodeDataStruct> tmp = new List<NodeDataStruct>();
-        //    tmp.Add(new NodeDataStruct() { NodeId = 1, NodeName = "GRC", NodePath = "1", NodeType = NodeType.GRC, ParentPath = "", IsTerminal = false });
-        //    nodeList.ForEach(x =>
-        //    {
-        //        tmp.Add(new NodeDataStruct() { NodeId = Convert.ToInt32(string.Format("{0}{1}", 1,i)) , NodeName = x.MainFolderName, NodePath = string.Format("{0}{1}", 1, i), NodeType = (NodeType)(i+1), ParentPath = "1", IsTerminal = false });
-        //        parentPath = string.Format("{0}{1}", 1, i);
-        //        x.SubNodeNames.ForEach(y =>
-        //        {
-        //            if (y.IFItIsNotFolder)
-        //            {
-        //                tmp.Add(new NodeDataStruct() { NodeId = Convert.ToInt32(string.Format("{0}{1}", 11, i)), NodeName = y.SubNodeNames, NodePath = string.Format("{0}{1}", 11, i), NodeType = y.NodeType, ParentPath = parentPath, IsTerminal = y.IFItIsNotFolder,DataType = y.DataType });
+        /// <summary>
+        /// 發生值變時回傳dictionary
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private bool GetNodeValue(Dictionary<string, BaseDataVariableState> obj)
+        {
+            return true;
+        }
 
-        //            }
-        //            else
-        //            {
-        //                tmp.Add(new NodeDataStruct() { NodeId = Convert.ToInt32(string.Format("{0}{1}", 11, i)), NodeName = y.SubNodeNames, NodePath = string.Format("{0}{1}", 11, i), NodeType = y.NodeType, ParentPath = parentPath, IsTerminal = y.IFItIsNotFolder });
-
-        //            }
-
-        //        });
-
-        //        i++;
-        //    });
-
-        //    return new List<OpcuaNode>();
-        //}
         private ServiceResult OnStopProcess(ISystemContext context, MethodState method, IList<object> inputArguments, IList<object> outputArguments)
         {
             return ServiceResult.Good;
