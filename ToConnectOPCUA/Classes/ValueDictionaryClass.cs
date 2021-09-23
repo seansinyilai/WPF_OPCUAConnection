@@ -8,6 +8,7 @@ namespace ToConnectOPCUA.Classes
 {
     public class ValueDictionaryClass
     {
+        public string Identifier { get; set; }
         public string FieldsName { get; set; }
         public object FieldsValue { get; set; }
         public ValueDictionaryClass()

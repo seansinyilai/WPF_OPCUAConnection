@@ -26,22 +26,14 @@ namespace ToConnectOPCUA.Classes
         private int cfgCount = -1;
         private ReferenceServerConfiguration m_configuration;
         private Opc.Ua.Test.DataGenerator m_generator;
-        private Timer m_simulationTimer;
+       // private Timer m_simulationTimer;
         private UInt16 m_simulationInterval = 1000;
         private bool m_simulationEnabled = true;
         private List<T> nodes;
         public Func<Dictionary<string, BaseDataVariableState>, bool> _actonDelegate;
         public Thread CycleUpdateVal;
-        /// <summary>
-        /// 测点集合,实时数据刷新时,直接从字典中取出对应的测点,修改值即可
-        /// </summary>
         private Dictionary<string, BaseDataVariableState> _nodeDic = new Dictionary<string, BaseDataVariableState>();
-        /// <summary>
-        /// 目录集合,修改菜单树时需要(我们需要知道哪些菜单需要修改,哪些需要新增,哪些需要删除)
-        /// </summary>
         private Dictionary<string, FolderState> _folderDic = new Dictionary<string, FolderState>();
-
-
         public Dictionary<string, object> _GotDictionary = new Dictionary<string, object>();
         //public Dictionary<string, BaseDataVariableState> GotDictionary
         //{
@@ -57,7 +49,7 @@ namespace ToConnectOPCUA.Classes
         //}
         private ObservableCollection<ValueDictionaryClass> _myDict;
 
-        public ObservableCollection<ValueDictionaryClass> MyDict 
+        public ObservableCollection<ValueDictionaryClass> MyDict
         {
             get { return _myDict; }
             set
@@ -156,23 +148,14 @@ namespace ToConnectOPCUA.Classes
             {
                 try
                 {
-                    /*
-                * 此處僅作示例代碼  所以不修改節點樹 故將UpdateNodesAttribute()方法跳過
-                     * 在實際業務中  請根據自身的業務需求決定何時修改節點
-                     */
                     int count = 0;
-                    //配置发生更改时,重新生成节点树
                     if (count > 0 && count != cfgCount)
                     {
                         cfgCount = count;
                         List<OpcuaNode> nodes = new List<OpcuaNode>();
-                        /*
-
-                         * 此處有想過刪除整個菜單樹,然後重建 保證各個NodeId仍與原來的一直
-                         * 但是 後來發現這樣會導致原來的客戶端訂閱信息丟失  無法獲取訂閱數據
-                         * 所以  只能一級級的檢查節點  然後修改屬性
+                        /*  
+                         *  UpdateNodesAttribute(nodes);                     
                          */
-                        //  UpdateNodesAttribute(nodes);
                     }
 
                     //模擬獲取實時數據
@@ -180,7 +163,7 @@ namespace ToConnectOPCUA.Classes
                     Application.Current.Dispatcher.Invoke((Action)delegate
                     {
                         MyDict?.Clear();
-                       
+
                         MyDict = new ObservableCollection<ValueDictionaryClass>();
                     });
 
@@ -203,8 +186,8 @@ namespace ToConnectOPCUA.Classes
                         node.ClearChangeMasks(SystemContext, false);//變更標識  只有執行了這一步,訂閱的客戶端才會收到新的數據                            
                         Application.Current.Dispatcher.Invoke((Action)delegate
                         {
-                            MyDict.Add(new ValueDictionaryClass() { FieldsName = node.NodeId.Identifier.ToString(), FieldsValue = node.Value });
-                 
+                            MyDict.Add(new ValueDictionaryClass() { Identifier = node.NodeId.Identifier.ToString(), FieldsName = node.SymbolicName, FieldsValue = node.Value });
+
                         });
                     }
 
@@ -212,25 +195,13 @@ namespace ToConnectOPCUA.Classes
                     {
                         var dict3 = _nodeDic.Where(entry => _GotDictionary[entry.Key] != entry.Value)
                                                .ToDictionary(entry => entry.Key, entry => entry.Value);
-                        if (dict3.Count > 0) SpinWait.SpinUntil(() => _actonDelegate(dict3));                       
+                        if (dict3.Count > 0) SpinWait.SpinUntil(() => _actonDelegate(dict3));
                     }
                     _GotDictionary.Clear();
                     foreach (var key in MyDict)
                     {
-                        _GotDictionary.Add(key.FieldsName, key.FieldsValue);
+                        _GotDictionary.Add(key.Identifier, key.FieldsValue);
                     }
-                    //if (_GotDictionary.Count != 0 && _nodeDic.Count != 0)
-                    //{
-
-                    //    var dict3 = _nodeDic.Where(entry => _GotDictionary[entry.Key] != entry.Value)
-                    //                           .ToDictionary(entry => entry.Key, entry => entry.Value);
-                    //    if (dict3.Count > 0) SpinWait.SpinUntil(() => _actonDelegate(dict3));                  
-                    //}
-                    //_GotDictionary.Clear();
-                    //foreach (var key in _nodeDic.Keys)
-                    //{
-                    //    _GotDictionary.Add(key, _nodeDic[key]);
-                    //}
                     //GotDictionary = _nodeDic;
 
                     //1秒更新一次
@@ -246,6 +217,8 @@ namespace ToConnectOPCUA.Classes
             //});
         }
         #endregion
+
+        #region 產生根目錄
 
 
         /// <summary>
@@ -300,7 +273,7 @@ namespace ToConnectOPCUA.Classes
 
                         //此處需要注意  目錄字典是以目錄路徑作為KEY 而 測點字典是以測點ID作為KEY  為了方便更新實時數據
                         _nodeDic.Add(node.NodeId.ToString(), variable);
-                       
+
                     }
                 }
                 catch (Exception ex)
@@ -312,6 +285,48 @@ namespace ToConnectOPCUA.Classes
             });
 
         }
+        /// <summary>
+        /// Creates a new variable.
+        /// </summary>
+        private BaseDataVariableState CreateVariable(NodeState parent, string path, string name, NodeId dataType, int valueRank)
+        {
+            BaseDataVariableState variable = new BaseDataVariableState(parent);
+
+            variable.SymbolicName = name;
+            variable.ReferenceTypeId = ReferenceTypes.Organizes;
+            variable.TypeDefinitionId = VariableTypeIds.BaseDataVariableType;
+            variable.NodeId = new NodeId(path, NamespaceIndex);
+            variable.BrowseName = new QualifiedName(path, NamespaceIndex);
+            variable.DisplayName = new LocalizedText("en", name);
+            variable.WriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
+            variable.UserWriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
+            variable.DataType = dataType;
+            variable.ValueRank = valueRank;
+            variable.AccessLevel = AccessLevels.CurrentReadOrWrite;
+            variable.UserAccessLevel = AccessLevels.CurrentReadOrWrite;
+            variable.Historizing = false;
+            // variable.Value = GetNewValue(variable);
+            variable.StatusCode = StatusCodes.Good;
+            variable.Timestamp = DateTime.UtcNow;
+            variable.OnWriteValue = OnWriteDataValue;
+
+            if (valueRank == ValueRanks.OneDimension)
+            {
+                variable.ArrayDimensions = new ReadOnlyList<uint>(new List<uint> { 0 });
+            }
+            else if (valueRank == ValueRanks.TwoDimensions)
+            {
+                variable.ArrayDimensions = new ReadOnlyList<uint>(new List<uint> { 0, 0 });
+            }
+
+            if (parent != null)
+            {
+                parent.AddChild(variable);
+            }
+
+            return variable;
+        }
+
         /// <summary>
         /// 產生一個folder一個數值
         /// </summary>
@@ -379,6 +394,7 @@ namespace ToConnectOPCUA.Classes
             return subFolder;
         }
 
+        #endregion
 
         private ServiceResult OnWriteInterval(ISystemContext context, NodeState node, ref object value)
         {
@@ -388,7 +404,7 @@ namespace ToConnectOPCUA.Classes
 
                 if (m_simulationEnabled)
                 {
-                    m_simulationTimer.Change(100, (int)m_simulationInterval);
+                //    m_simulationTimer.Change(100, (int)m_simulationInterval);
                 }
 
                 return ServiceResult.Good;
@@ -408,11 +424,11 @@ namespace ToConnectOPCUA.Classes
 
                 if (m_simulationEnabled)
                 {
-                    m_simulationTimer.Change(100, (int)m_simulationInterval);
+                 //   m_simulationTimer.Change(100, (int)m_simulationInterval);
                 }
                 else
                 {
-                    m_simulationTimer.Change(100, 0);
+                //    m_simulationTimer.Change(100, 0);
                 }
 
                 return ServiceResult.Good;
@@ -561,47 +577,7 @@ namespace ToConnectOPCUA.Classes
         {
             return CreateVariable(parent, path, name, (uint)dataType, valueRank);
         }
-        /// <summary>
-        /// Creates a new variable.
-        /// </summary>
-        private BaseDataVariableState CreateVariable(NodeState parent, string path, string name, NodeId dataType, int valueRank)
-        {
-            BaseDataVariableState variable = new BaseDataVariableState(parent);
-
-            variable.SymbolicName = name;
-            variable.ReferenceTypeId = ReferenceTypes.Organizes;
-            variable.TypeDefinitionId = VariableTypeIds.BaseDataVariableType;
-            variable.NodeId = new NodeId(path, NamespaceIndex);
-            variable.BrowseName = new QualifiedName(path, NamespaceIndex);
-            variable.DisplayName = new LocalizedText("en", name);
-            variable.WriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
-            variable.UserWriteMask = AttributeWriteMask.DisplayName | AttributeWriteMask.Description;
-            variable.DataType = dataType;
-            variable.ValueRank = valueRank;
-            variable.AccessLevel = AccessLevels.CurrentReadOrWrite;
-            variable.UserAccessLevel = AccessLevels.CurrentReadOrWrite;
-            variable.Historizing = false;
-            // variable.Value = GetNewValue(variable);
-            variable.StatusCode = StatusCodes.Good;
-            variable.Timestamp = DateTime.UtcNow;
-            variable.OnWriteValue = OnWriteDataValue;
-
-            if (valueRank == ValueRanks.OneDimension)
-            {
-                variable.ArrayDimensions = new ReadOnlyList<uint>(new List<uint> { 0 });
-            }
-            else if (valueRank == ValueRanks.TwoDimensions)
-            {
-                variable.ArrayDimensions = new ReadOnlyList<uint>(new List<uint> { 0, 0 });
-            }
-
-            if (parent != null)
-            {
-                parent.AddChild(variable);
-            }
-
-            return variable;
-        }
+      
         /// <summary>
         /// 客戶端寫值時觸發
         /// </summary>
@@ -618,7 +594,6 @@ namespace ToConnectOPCUA.Classes
             BaseDataVariableState variable = node as BaseDataVariableState;
             try
             {
-                //验证数据类型
                 TypeInfo typeInfo = TypeInfo.IsInstanceOfDataType(
                     value,
                     variable.DataType,
@@ -708,6 +683,7 @@ namespace ToConnectOPCUA.Classes
 
             return method;
         }
+        #region 驗證node
         /// <summary>
         /// Verifies that the specified node exists.
         /// </summary>
@@ -732,6 +708,8 @@ namespace ToConnectOPCUA.Classes
 
             return null;
         }
+        #endregion
+
         #region PropertyChangedEventHandler
         public event PropertyChangedEventHandler PropertyChanged;
 
