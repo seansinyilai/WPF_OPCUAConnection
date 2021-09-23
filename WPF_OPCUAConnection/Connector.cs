@@ -27,7 +27,7 @@ namespace WPF_OPCUAConnection
             set
             {
                 _MyService = value;
-                NotifyPropertyChanged();
+                NotifyPropertyChanged(); 
             }
         }
         public ReferenceNodeManager<OpcuaNode> ReferenceNodeManagerObj
