@@ -128,8 +128,6 @@ namespace ToConnectOPCUA.Classes
 
         private void UpdateVariableValue()
         {
-            //Task.Run(() =>
-            //{
             while (true)
             {
                 try
@@ -148,7 +146,6 @@ namespace ToConnectOPCUA.Classes
                     Application.Current.Dispatcher.Invoke((Action)delegate
                     {
                         MyDict?.Clear();
-
                         MyDict = new ObservableCollection<ValueDictionaryClass>();
                     });                  
 
@@ -186,7 +183,7 @@ namespace ToConnectOPCUA.Classes
 
                         });
                     }
-                    _GotDictionary.Clear();
+                    _GotDictionary?.Clear();
                     foreach (var key in MyDict)
                     {
                         _GotDictionary.Add(string.Format("{0}", key.FieldsName), key.FieldsValue);
@@ -201,7 +198,6 @@ namespace ToConnectOPCUA.Classes
                     Console.ResetColor();
                 }
             }
-            //});
         }
 
         public void SetValue(string target, DataType dataType, object value)
@@ -328,9 +324,7 @@ namespace ToConnectOPCUA.Classes
                     {
                         /// 如果不是資料夾
                         BaseDataVariableState variable = CreateVariable(parent, node.NodePath, node.NodeName, node.DataType, ValueRanks.Scalar);
-
                         //此處需要注意  目錄字典是以目錄路徑作為KEY 而 測點字典是以測點ID作為KEY  為了方便更新實時數據
-
                         _nodeDic.Add(string.Format("{0}", variable.SymbolicName), variable);
                         //_nodeDic.Add(node.NodeId.ToString(), variable);
 
@@ -455,7 +449,6 @@ namespace ToConnectOPCUA.Classes
         }
 
         #endregion
-
         private ServiceResult OnWriteInterval(ISystemContext context, NodeState node, ref object value)
         {
             try
@@ -772,7 +765,6 @@ namespace ToConnectOPCUA.Classes
 
         #region PropertyChangedEventHandler
         public event PropertyChangedEventHandler PropertyChanged;
-
         public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
