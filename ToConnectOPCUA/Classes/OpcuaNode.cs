@@ -27,7 +27,7 @@ namespace ToConnectOPCUA.Classes
         /// </summary>
         public abstract string NodeName { get; set; }
         /// <summary>
-        /// 是否端點(最底端子節點)
+        /// 是否端點(最底端子節點) 是否為資料夾
         /// </summary>
         public abstract bool IsTerminal { get; set; }
         /// <summary>
