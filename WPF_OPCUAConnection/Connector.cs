@@ -82,30 +82,27 @@ namespace WPF_OPCUAConnection
             b.Add(DataType.Boolean);
             b.Add(DataType.Double);
             b.Add(DataType.Double);
-            b.Add(DataType.Double); 
+            b.Add(DataType.Double);
             b.Add(DataType.Boolean);
             b.Add(DataType.Double);
             c.Add(false);
             c.Add(2.36);
             c.Add(3.55);
-            c.Add(7.36); 
+            c.Add(7.36);
             c.Add(true);
             c.Add(3.36);
-            ReferenceNodeManagerObj.SetValues(a,b,c);
+            ReferenceNodeManagerObj.SetValues(a, b, c);
             //ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, false);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point2", DataType.Double, 2.36);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point3", DataType.Double, 3.55);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point4", DataType.Double, 7.36);
             //ReferenceNodeManagerObj.SetValue("PLC2_Connection", DataType.Boolean, false);
             //ReferenceNodeManagerObj.SetValue("PLC2_Point2", DataType.Double, 3.66);
-
             //new Thread(() =>
             //{
             //    SpinWait.SpinUntil(() => false, 10000);
             //    ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, true);
             //}).Start();
-
-
         }
         /// <summary>
         /// 發生值變時回傳dictionary
