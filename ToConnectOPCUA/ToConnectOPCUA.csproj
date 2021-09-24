@@ -222,6 +222,7 @@
     <Compile Include="Classes\ReferenceServer.cs" />
     <Compile Include="Classes\ReferenceServerConfiguration.cs" />
     <Compile Include="Classes\ValueDictionaryClass.cs" />
+    <Compile Include="Enum\DataType.cs" />
     <Compile Include="OPCUA_Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

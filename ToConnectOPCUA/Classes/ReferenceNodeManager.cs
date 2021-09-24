@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Xml;
+using ToConnectOPCUA.Enum;
 
 namespace ToConnectOPCUA.Classes
 {
@@ -26,7 +27,7 @@ namespace ToConnectOPCUA.Classes
         private int cfgCount = -1;
         private ReferenceServerConfiguration m_configuration;
         private Opc.Ua.Test.DataGenerator m_generator;
-       // private Timer m_simulationTimer;
+        // private Timer m_simulationTimer;
         private UInt16 m_simulationInterval = 1000;
         private bool m_simulationEnabled = true;
         private List<T> nodes;
@@ -157,7 +158,6 @@ namespace ToConnectOPCUA.Classes
                          *  UpdateNodesAttribute(nodes);                     
                          */
                     }
-
                     //模擬獲取實時數據
                     BaseDataVariableState node = null;
                     Application.Current.Dispatcher.Invoke((Action)delegate
@@ -165,23 +165,34 @@ namespace ToConnectOPCUA.Classes
                         MyDict?.Clear();
 
                         MyDict = new ObservableCollection<ValueDictionaryClass>();
-                    });
+                    });                  
 
+                    if (_GotDictionary.Count != 0 && _nodeDic.Count != 0)
+                    {
+                        bool flag = false;
+                        foreach (var item in _GotDictionary)
+                        {
+                            if (_GotDictionary[item.Key] == null)
+                            {
+                                flag = true;
+                            }  
+                        }
+                        if (!flag)
+                        {
+                            var dict3 = _nodeDic.Where(entry =>
+                                                         !(_GotDictionary[entry.Key].Equals(entry.Value.Value)) && (entry.Value.Value != null))
+                                                        .ToDictionary(entry => entry.Key, entry => entry.Value);
+                            if (dict3.Count > 0) 
+                                SpinWait.SpinUntil(() => _actonDelegate(dict3));
+                        }                        
+                    }
                     /*                    
-                     * 在實際業務中應該是根據對應的標識來更新固定節點的數據
-                     * 全部測點都更新為一個新的隨機數
-                     */
+                   * 在實際業務中應該是根據對應的標識來更新固定節點的數據
+                   * 全部測點都更新為一個新的隨機數
+                   */
                     foreach (var item in _nodeDic)
                     {
                         node = item.Value;
-                        if (item.Value.DataType == DataTypeIds.Boolean)
-                        {
-                            node.Value = Convert.ToBoolean(RandomLibrary.GetRandomInt(0, 2));
-                        }
-                        else if (item.Value.DataType == DataTypeIds.Double)
-                        {
-                            node.Value = RandomLibrary.GetRandomInt(0, 99);
-                        }
                         node.Timestamp = DateTime.Now;
                         node.ClearChangeMasks(SystemContext, false);//變更標識  只有執行了這一步,訂閱的客戶端才會收到新的數據                            
                         Application.Current.Dispatcher.Invoke((Action)delegate
@@ -190,20 +201,11 @@ namespace ToConnectOPCUA.Classes
 
                         });
                     }
-
-                    if (_GotDictionary.Count != 0 && _nodeDic.Count != 0)
-                    {
-                        var dict3 = _nodeDic.Where(entry => _GotDictionary[entry.Key] != entry.Value)
-                                               .ToDictionary(entry => entry.Key, entry => entry.Value);
-                        if (dict3.Count > 0) SpinWait.SpinUntil(() => _actonDelegate(dict3));
-                    }
                     _GotDictionary.Clear();
                     foreach (var key in MyDict)
                     {
-                        _GotDictionary.Add(key.Identifier, key.FieldsValue);
+                        _GotDictionary.Add(string.Format("{0}", key.FieldsName), key.FieldsValue);
                     }
-                    //GotDictionary = _nodeDic;
-
                     //1秒更新一次
                     SpinWait.SpinUntil(() => false, 1000);
                 }
@@ -215,6 +217,77 @@ namespace ToConnectOPCUA.Classes
                 }
             }
             //});
+        }
+
+        public void SetValue(string target, DataType dataType, object value)
+        {
+            BaseDataVariableState node = null;
+            var TargetGotten = _nodeDic.Where(x => target == x.Key);
+            var targetResult = TargetGotten.ToList();
+            targetResult.ForEach(o =>
+            {
+                node = o.Value;
+            });
+            var convertedType = Convert.ToInt32(node.DataType.Identifier);
+            var type = (DataType)convertedType;
+            try
+            {
+                if (targetResult.Count > 0)
+                {
+                    switch (dataType)
+                    {
+                        case DataType.DateTime:
+                            if (type == dataType) node.Value = (DateTime)value;
+                            break;
+                        case DataType.String:
+                            if (type == dataType) node.Value = (string)value;
+                            break;
+                        case DataType.Double:
+                            if (type == dataType) node.Value = (double)value;
+                            break;
+                        case DataType.Float:
+                            if (type == dataType) node.Value = (float)value;
+                            break;
+                        case DataType.UInt64:
+                            if (type == dataType) node.Value = (UInt64)value;
+                            break;
+                        case DataType.Int64:
+                            if (type == dataType) node.Value = (Int64)value;
+                            break;
+                        case DataType.UInt32:
+                            if (type == dataType) node.Value = (UInt32)value;
+                            break;
+                        case DataType.Int32:
+                            if (type == dataType) node.Value = (Int32)value;
+                            break;
+                        case DataType.UInt16:
+                            if (type == dataType) node.Value = (UInt16)value;
+                            break;
+                        case DataType.Int16:
+                            if (type == dataType) node.Value = (Int16)value;
+                            break;
+                        case DataType.Byte:
+                            if (type == dataType) node.Value = (byte)value;
+                            break;
+                        case DataType.SByte:
+                            if (type == dataType) node.Value = (sbyte)value;
+                            break;
+                        case DataType.Boolean:
+                            if (type == dataType) node.Value = (bool)value;
+                            break;
+                        case DataType.UInteger:
+                            if (type == dataType) node.Value = (uint)value;
+                            break;
+                        case DataType.Integer:
+                            if (type == dataType) node.Value = (int)value;
+                            break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(string.Format("{0}{1}"), "An error occured during setting value process", e.Message);
+            }
         }
         #endregion
 
@@ -272,7 +345,9 @@ namespace ToConnectOPCUA.Classes
                         BaseDataVariableState variable = CreateVariable(parent, node.NodePath, node.NodeName, node.DataType, ValueRanks.Scalar);
 
                         //此處需要注意  目錄字典是以目錄路徑作為KEY 而 測點字典是以測點ID作為KEY  為了方便更新實時數據
-                        _nodeDic.Add(node.NodeId.ToString(), variable);
+
+                        _nodeDic.Add(string.Format("{0}", variable.SymbolicName), variable);
+                        //_nodeDic.Add(node.NodeId.ToString(), variable);
 
                     }
                 }
@@ -404,7 +479,7 @@ namespace ToConnectOPCUA.Classes
 
                 if (m_simulationEnabled)
                 {
-                //    m_simulationTimer.Change(100, (int)m_simulationInterval);
+                    //    m_simulationTimer.Change(100, (int)m_simulationInterval);
                 }
 
                 return ServiceResult.Good;
@@ -424,11 +499,11 @@ namespace ToConnectOPCUA.Classes
 
                 if (m_simulationEnabled)
                 {
-                 //   m_simulationTimer.Change(100, (int)m_simulationInterval);
+                    //   m_simulationTimer.Change(100, (int)m_simulationInterval);
                 }
                 else
                 {
-                //    m_simulationTimer.Change(100, 0);
+                    //    m_simulationTimer.Change(100, 0);
                 }
 
                 return ServiceResult.Good;
@@ -577,7 +652,7 @@ namespace ToConnectOPCUA.Classes
         {
             return CreateVariable(parent, path, name, (uint)dataType, valueRank);
         }
-      
+
         /// <summary>
         /// 客戶端寫值時觸發
         /// </summary>
