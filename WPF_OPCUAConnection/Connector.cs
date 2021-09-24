@@ -92,6 +92,27 @@ namespace WPF_OPCUAConnection
             c.Add(true);
             c.Add(3.36);
             ReferenceNodeManagerObj.SetValues(a, b, c);
+            new Thread(() =>
+            {
+                SpinWait.SpinUntil(() => false, 10000);
+                List<string> d = new List<string>();
+                List<DataType> e = new List<DataType>();
+                List<object> f = new List<object>();
+                d.Add("PLC1_Connection");
+                d.Add("PLC1_Point3");
+                d.Add("PLC2_Connection");
+                d.Add("PLC2_Point2");
+                e.Add(DataType.Boolean);
+                e.Add(DataType.Double);
+                e.Add(DataType.Boolean);
+                e.Add(DataType.Double);
+                f.Add(true);
+                f.Add(3.36);
+                f.Add(false);
+                f.Add(2.36);
+                ReferenceNodeManagerObj.SetValues(d, e, f);
+            }).Start();
+           
             //ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, false);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point2", DataType.Double, 2.36);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point3", DataType.Double, 3.55);
