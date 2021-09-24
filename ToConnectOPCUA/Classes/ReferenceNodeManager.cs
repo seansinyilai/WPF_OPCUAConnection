@@ -165,7 +165,7 @@ namespace ToConnectOPCUA.Classes
                         if (!flag)
                         {
                             var dict3 = _nodeDic.Where(entry =>
-                                                         !(_GotDictionary[entry.Key].Equals(entry.Value.Value)) && (entry.Value.Value != null))
+                                                         !_GotDictionary[entry.Key].Equals(entry.Value.Value) && (entry.Value.Value != null))
                                                         .ToDictionary(entry => entry.Key, entry => entry.Value);
                             if (dict3.Count > 0) 
                                 SpinWait.SpinUntil(() => _actonDelegate(dict3));
