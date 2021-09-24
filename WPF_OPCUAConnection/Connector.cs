@@ -57,15 +57,15 @@ namespace WPF_OPCUAConnection
             new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
             new List<NodeDataStruct>()
             {
-                  new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
-                  new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
-                  new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
-                  new NodeDataStruct(){NodeId=111,NodeName="PLC1_Connection",NodePath="111",NodeType=NodeType.Point,ParentPath="11", IsTerminal=true ,DataType =DataTypeIds.Boolean},
-                  new NodeDataStruct(){NodeId=112,NodeName="PLC1_Point2",NodePath="112",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-                  new NodeDataStruct(){NodeId=113,NodeName="PLC1_Point3",NodePath="113",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-                  new NodeDataStruct(){NodeId=114,NodeName="PLC1_Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-                  new NodeDataStruct(){NodeId=121,NodeName="PLC2_Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
-                  new NodeDataStruct(){NodeId=122,NodeName="PLC2_Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
+               new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
+               new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
+               new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
+               new NodeDataStruct(){NodeId=111,NodeName="PLC1_Connection",NodePath="111",NodeType=NodeType.Point,ParentPath="11", IsTerminal=true ,DataType =DataTypeIds.Boolean},
+               new NodeDataStruct(){NodeId=112,NodeName="PLC1_Point2",NodePath="112",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+               new NodeDataStruct(){NodeId=113,NodeName="PLC1_Point3",NodePath="113",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+               new NodeDataStruct(){NodeId=114,NodeName="PLC1_Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+               new NodeDataStruct(){NodeId=121,NodeName="PLC2_Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
+               new NodeDataStruct(){NodeId=122,NodeName="PLC2_Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
             }.ToList<OpcuaNode>()));
             ReferenceNodeManagerObj._actonDelegate = new Func<Dictionary<string, BaseDataVariableState>, bool>(GetNodeValue);
             ReferenceNodeManagerObj.CycleUpdateVal.IsBackground = true;
