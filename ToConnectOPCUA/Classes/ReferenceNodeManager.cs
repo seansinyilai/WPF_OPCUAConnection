@@ -275,7 +275,12 @@ namespace ToConnectOPCUA.Classes
                 Console.WriteLine(string.Format("{0}{1}"), "An error occured during setting value process", e.Message);
             }
         }
-
+        /// <summary>
+        /// 設定多個值
+        /// </summary>
+        /// <param name="target">NodeName 集合</param>
+        /// <param name="dataTypes">資料型態 集合</param>
+        /// <param name="values">值 集合</param>
         public void SetValues(List<string> target, List<DataType> dataTypes, List<object> values)
         {
             BaseDataVariableState node2 = null;
