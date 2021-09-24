@@ -70,18 +70,40 @@ namespace WPF_OPCUAConnection
             ReferenceNodeManagerObj._actonDelegate = new Func<Dictionary<string, BaseDataVariableState>, bool>(GetNodeValue);
             ReferenceNodeManagerObj.CycleUpdateVal.IsBackground = true;
             ReferenceNodeManagerObj.CycleUpdateVal.Start();
-            ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, false);
-            ReferenceNodeManagerObj.SetValue("PLC1_Point2", DataType.Double, 2.36);
-            ReferenceNodeManagerObj.SetValue("PLC1_Point3", DataType.Double, 3.55);
-            ReferenceNodeManagerObj.SetValue("PLC1_Point4", DataType.Double, 7.36);
-            ReferenceNodeManagerObj.SetValue("PLC2_Connection", DataType.Boolean, false);
-            ReferenceNodeManagerObj.SetValue("PLC2_Point2", DataType.Double, 3.66);
+            List<string> a = new List<string>();
+            List<DataType> b = new List<DataType>();
+            List<object> c = new List<object>();
+            a.Add("PLC1_Connection");
+            a.Add("PLC1_Point2");
+            a.Add("PLC1_Point3");
+            a.Add("PLC1_Point4");
+            a.Add("PLC2_Connection");
+            a.Add("PLC2_Point2");
+            b.Add(DataType.Boolean);
+            b.Add(DataType.Double);
+            b.Add(DataType.Double);
+            b.Add(DataType.Double); 
+            b.Add(DataType.Boolean);
+            b.Add(DataType.Double);
+            c.Add(false);
+            c.Add(2.36);
+            c.Add(3.55);
+            c.Add(7.36); 
+            c.Add(true);
+            c.Add(3.36);
+            ReferenceNodeManagerObj.SetValues(a,b,c);
+            //ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, false);
+            //ReferenceNodeManagerObj.SetValue("PLC1_Point2", DataType.Double, 2.36);
+            //ReferenceNodeManagerObj.SetValue("PLC1_Point3", DataType.Double, 3.55);
+            //ReferenceNodeManagerObj.SetValue("PLC1_Point4", DataType.Double, 7.36);
+            //ReferenceNodeManagerObj.SetValue("PLC2_Connection", DataType.Boolean, false);
+            //ReferenceNodeManagerObj.SetValue("PLC2_Point2", DataType.Double, 3.66);
 
-            new Thread(() =>
-            {
-                SpinWait.SpinUntil(() => false, 10000);
-                ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, true);
-            }).Start();
+            //new Thread(() =>
+            //{
+            //    SpinWait.SpinUntil(() => false, 10000);
+            //    ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, true);
+            //}).Start();
 
 
         }

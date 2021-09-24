@@ -147,7 +147,7 @@ namespace ToConnectOPCUA.Classes
                     {
                         MyDict?.Clear();
                         MyDict = new ObservableCollection<ValueDictionaryClass>();
-                    });                  
+                    });
 
                     if (_GotDictionary.Count != 0 && _nodeDic.Count != 0)
                     {
@@ -157,16 +157,16 @@ namespace ToConnectOPCUA.Classes
                             if (_GotDictionary[item.Key] == null)
                             {
                                 flag = true;
-                            }  
+                            }
                         }
                         if (!flag)
                         {
                             var dict3 = _nodeDic.Where(entry =>
                                                          !_GotDictionary[entry.Key].Equals(entry.Value.Value) && (entry.Value.Value != null))
                                                         .ToDictionary(entry => entry.Key, entry => entry.Value);
-                            if (dict3.Count > 0) 
+                            if (dict3.Count > 0)
                                 SpinWait.SpinUntil(() => _actonDelegate(dict3));
-                        }                        
+                        }
                     }
                     /*                    
                    * 在實際業務中應該是根據對應的標識來更新固定節點的數據
@@ -274,6 +274,88 @@ namespace ToConnectOPCUA.Classes
             {
                 Console.WriteLine(string.Format("{0}{1}"), "An error occured during setting value process", e.Message);
             }
+        }
+
+        public void SetValues(List<string> target, List<DataType> dataTypes, List<object> values)
+        {
+            BaseDataVariableState node2 = null;
+            if ((target.Count == dataTypes.Count) && (values.Count == dataTypes.Count))
+            {
+                try
+                {
+                    int idx = -1;
+                    target.ForEach((targetName) =>
+                    {
+                        var TargetGotten = _nodeDic.Where(node => node.Key == targetName).ToList();
+                        idx++;
+                        TargetGotten.ForEach(x =>
+                        {
+                            node2 = x.Value;
+                            var convertedType = Convert.ToInt32(node2.DataType.Identifier);
+                            var type = (DataType)convertedType;
+                            if (targetName.Equals(x.Key))
+                            {
+                                var tmpDataType = dataTypes[idx];
+                                switch (tmpDataType)
+                                {
+                                    case DataType.DateTime:
+                                        if (type == tmpDataType) node2.Value = (DateTime)values[idx];
+                                        break;
+                                    case DataType.String:
+                                        if (type == tmpDataType) node2.Value = (string)values[idx];
+                                        break;
+                                    case DataType.Double:
+                                        if (type == tmpDataType) node2.Value = (double)values[idx];
+                                        break;
+                                    case DataType.Float:
+                                        if (type == tmpDataType) node2.Value = (float)values[idx];
+                                        break;
+                                    case DataType.UInt64:
+                                        if (type == tmpDataType) node2.Value = (UInt64)values[idx];
+                                        break;
+                                    case DataType.Int64:
+                                        if (type == tmpDataType) node2.Value = (Int64)values[idx];
+                                        break;
+                                    case DataType.UInt32:
+                                        if (type == tmpDataType) node2.Value = (UInt32)values[idx];
+                                        break;
+                                    case DataType.Int32:
+                                        if (type == tmpDataType) node2.Value = (Int32)values[idx];
+                                        break;
+                                    case DataType.UInt16:
+                                        if (type == tmpDataType) node2.Value = (UInt16)values[idx];
+                                        break;
+                                    case DataType.Int16:
+                                        if (type == tmpDataType) node2.Value = (Int16)values[idx];
+                                        break;
+                                    case DataType.Byte:
+                                        if (type == tmpDataType) node2.Value = (byte)values[idx];
+                                        break;
+                                    case DataType.SByte:
+                                        if (type == tmpDataType) node2.Value = (sbyte)values[idx];
+                                        break;
+                                    case DataType.Boolean:
+                                        if (type == tmpDataType) node2.Value = (bool)values[idx];
+                                        break;
+                                    case DataType.UInteger:
+                                        if (type == tmpDataType) node2.Value = (uint)values[idx];
+                                        break;
+                                    case DataType.Integer:
+                                        if (type == tmpDataType) node2.Value = (int)values[idx];
+                                        break;
+                                }
+                            }
+                        });
+                    });
+
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(string.Format("{0}{1}"), "An error occured during setting value process", e.Message);
+                }
+            }
+
         }
         #endregion
 
