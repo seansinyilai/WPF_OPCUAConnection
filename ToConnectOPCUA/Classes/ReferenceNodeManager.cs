@@ -199,7 +199,12 @@ namespace ToConnectOPCUA.Classes
                 }
             }
         }
-
+        /// <summary>
+        /// 設定指定Node之值
+        /// </summary>
+        /// <param name="target">NodeName</param>
+        /// <param name="dataType">資料型態</param>
+        /// <param name="value">值</param>
         public void SetValue(string target, DataType dataType, object value)
         {
             BaseDataVariableState node = null;
