@@ -21,9 +21,6 @@ namespace ToConnectOPCUA.Classes
     public class ReferenceNodeManager<T> : CustomNodeManager2, INotifyPropertyChanged where T : OpcuaNode
     {
         #region Private Fields
-        /// <summary>
-        /// 配置修改次数  主要用来识别菜单树是否有变动  如果发生变动则修改菜单树对应节点  测点的实时数据变化不算在内
-        /// </summary>
         private int cfgCount = -1;
         private ReferenceServerConfiguration m_configuration;
         private Opc.Ua.Test.DataGenerator m_generator;
@@ -36,18 +33,6 @@ namespace ToConnectOPCUA.Classes
         private Dictionary<string, BaseDataVariableState> _nodeDic = new Dictionary<string, BaseDataVariableState>();
         private Dictionary<string, FolderState> _folderDic = new Dictionary<string, FolderState>();
         public Dictionary<string, object> _GotDictionary = new Dictionary<string, object>();
-        //public Dictionary<string, BaseDataVariableState> GotDictionary
-        //{
-        //    get
-        //    {
-        //        return _GotDictionary.ToDictionary(property => property.Key, property => property.Value);
-        //    }
-        //    set
-        //    {
-        //        _GotDictionary = value;
-        //        NotifyPropertyChanged();
-        //    }
-        //}
         private ObservableCollection<ValueDictionaryClass> _myDict;
 
         public ObservableCollection<ValueDictionaryClass> MyDict
