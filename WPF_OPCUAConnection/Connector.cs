@@ -20,6 +20,10 @@ namespace WPF_OPCUAConnection
 {
     public class Connector : INotifyPropertyChanged
     {
+        private static List<NodeDataStruct> retrunListOfNodes = new List<NodeDataStruct>();
+        List<ListNodeStruct> h;
+
+
         private OPCUA_Server _MyService;
 
         public OPCUA_Server MyService
@@ -50,26 +54,91 @@ namespace WPF_OPCUAConnection
             //obj.GPPlantServer.GPPlantObj.StopProcess.OnCallMethod(obj.GPPlantServer.GPPlantNodeManager.SystemContext, new MethodState(a), new List<object> { 1, 2 }, new List<object> { 3, 4 });
 
             #endregion
-
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
-
-            MyService = new OPCUA_Server(
-            new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
-            new List<NodeDataStruct>()
+            #region↓↓↓↓↓↓↓↓↓ 建立樹狀結構 ↓↓↓↓↓↓↓↓↓
+            int idx = 0;
+            List<ListNodeStruct> g = new List<ListNodeStruct>();
+            for (int i = 0; i < 2; i++)
             {
-               new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
-               new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
-               new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
-               new NodeDataStruct(){NodeId=111,NodeName="PLC1_Connection",NodePath="111",NodeType=NodeType.Point,ParentPath="11", IsTerminal=true ,DataType =DataTypeIds.Boolean},
-               new NodeDataStruct(){NodeId=112,NodeName="PLC1_Point2",NodePath="112",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-               new NodeDataStruct(){NodeId=113,NodeName="PLC1_Point3",NodePath="113",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-               new NodeDataStruct(){NodeId=114,NodeName="PLC1_Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-               new NodeDataStruct(){NodeId=121,NodeName="PLC2_Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
-               new NodeDataStruct(){NodeId=122,NodeName="PLC2_Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
-            }.ToList<OpcuaNode>()));
+                g.Add(new ListNodeStruct()
+                {
+                    NodeID = Convert.ToInt32(string.Format("{0}{1}", 1, i + 1)),
+                    MainFolderName = "PLC" + (i + 1),
+                    ParentPath = "1",
+                    NodeType = NodeType.PLC1 + i,
+                    IsRootEnd = false,
+                    LengthOfNode = 1,
+                });
+                h = new List<ListNodeStruct>();
+
+                h.Add(new ListNodeStruct()
+                {
+                    NodeID = Convert.ToInt32(string.Format("{0}{1}", g[i].NodeID, idx + 1)),
+                    MainFolderName = "PLC" + (idx + 1) + "_Connection",
+                    ParentPath = string.Format("{0}", g[i].NodeID),
+                    NodeType = NodeType.Point,
+                    IsRootEnd = true,
+                    LengthOfNode = g[i].LengthOfNode,
+                    DataType = DataTypeIds.Boolean
+                });
+                h.Add(new ListNodeStruct()
+                {
+                    NodeID = Convert.ToInt32(string.Format("{0}{1}", g[i].NodeID, idx + 2)),
+                    MainFolderName = "PLC" + (idx + 1) + "_Point2",
+                    ParentPath = string.Format("{0}", g[i].NodeID),
+                    NodeType = NodeType.Point,
+                    IsRootEnd = true,
+                    LengthOfNode = g[i].LengthOfNode,
+                    DataType = DataTypeIds.Double
+                });
+                h.Add(new ListNodeStruct()
+                {
+                    NodeID = Convert.ToInt32(string.Format("{0}{1}", g[i].NodeID, idx + 3)),
+                    MainFolderName = "PLC" + (idx + 1) + "_Point3",
+                    ParentPath = string.Format("{0}", g[i].NodeID),
+                    NodeType = NodeType.Point,
+                    IsRootEnd = true,
+                    LengthOfNode = g[i].LengthOfNode,
+                    DataType = DataTypeIds.Double
+                });
+                h.Add(new ListNodeStruct()
+                {
+                    NodeID = Convert.ToInt32(string.Format("{0}{1}", g[i].NodeID, idx + 4)),
+                    MainFolderName = "PLC" + (idx + 1) + "_Point4",
+                    ParentPath = string.Format("{0}", g[i].NodeID),
+                    NodeType = NodeType.Point,
+                    IsRootEnd = true,
+                    LengthOfNode = g[i].LengthOfNode,
+                    DataType = DataTypeIds.Double
+                });
+                g[i].SubNodeNames = h;
+                idx++;
+            }
+            List<ListNodeStruct> ListOfMachine = new List<ListNodeStruct>();
+            ListOfMachine.Add(new ListNodeStruct()
+            {
+                NodeID = 1,
+                MainFolderName = "GRC",
+                ParentPath = string.Empty,
+                NodeType = NodeType.GRC,
+                IsRootEnd = false,
+                LengthOfNode = g.Count,
+                SubNodeNames = g
+            });
+            BuildingTree(ListOfMachine);
+
+            #endregion
+
+            #region 開啟Server與連線
+            MyService = new OPCUA_Server(
+           new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
+               retrunListOfNodes.ToList<OpcuaNode>()));
             ReferenceNodeManagerObj._actonDelegate = new Func<Dictionary<string, BaseDataVariableState>, bool>(GetNodeValue);
             ReferenceNodeManagerObj.CycleUpdateVal.IsBackground = true;
             ReferenceNodeManagerObj.CycleUpdateVal.Start();
+            #endregion
+
+            #region 給予數值
             List<string> a = new List<string>();
             List<DataType> b = new List<DataType>();
             List<object> c = new List<object>();
@@ -112,7 +181,8 @@ namespace WPF_OPCUAConnection
                 f.Add(2.36);
                 ReferenceNodeManagerObj.SetValues(d, e, f);
             }).Start();
-           
+            #endregion
+
             //ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, false);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point2", DataType.Double, 2.36);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point3", DataType.Double, 3.55);
@@ -121,10 +191,57 @@ namespace WPF_OPCUAConnection
             //ReferenceNodeManagerObj.SetValue("PLC2_Point2", DataType.Double, 3.66);
             //new Thread(() =>
             //{
-            //    SpinWait.SpinUntil(() => false, 10000);
+            //    SpinWait.SpinUntil(() => false, 2000);
             //    ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, true);
+            //    ReferenceNodeManagerObj.SetValue("PLC2_Point3", DataType.Double, 6.2);
+            //    ReferenceNodeManagerObj.SetValue("PLC2_Point4", DataType.Double, 8.0);
             //}).Start();
         }
+
+        public void BuildingTree(List<ListNodeStruct> listNodeStruct)
+        {
+            listNodeStruct.ForEach(listnode =>
+            {
+                if (listnode.NodeType == NodeType.GRC) retrunListOfNodes.Add(new NodeDataStruct() { NodeId = listnode.NodeID, NodeName = listnode.MainFolderName, NodePath = listnode.NodeID.ToString(), NodeType = listnode.NodeType, ParentPath = listnode.ParentPath, IsTerminal = listnode.IsRootEnd });
+
+                listnode.SubNodeNames?.ForEach(subNode =>
+                {
+                    if (!subNode.IsRootEnd)
+                    {
+                        retrunListOfNodes.Add(new NodeDataStruct() { NodeId = subNode.NodeID, NodeName = subNode.MainFolderName, NodePath = subNode.NodeID.ToString(), NodeType = subNode.NodeType, ParentPath = subNode.ParentPath, IsTerminal = subNode.IsRootEnd });
+
+                        BuildingTree(new List<ListNodeStruct>() {
+                        new ListNodeStruct()
+                        {
+                            NodeID = Convert.ToInt32(string.Format("{0}", subNode.NodeID.ToString())),
+                            MainFolderName = subNode.MainFolderName,
+                            ParentPath = string.Format("{0}", listnode.NodeID.ToString()),
+                            NodeType = subNode.NodeType,
+                            IsRootEnd = subNode.IsRootEnd,
+                            LengthOfNode = subNode.LengthOfNode,
+                            SubNodeNames = subNode.SubNodeNames
+                        }
+                        });
+                    }
+                    else
+                    {
+                        retrunListOfNodes.Add(new NodeDataStruct()
+                        {
+                            NodeId = subNode.NodeID,
+                            NodeName = subNode.MainFolderName,
+                            NodePath = subNode.NodeID.ToString(),
+                            NodeType = subNode.NodeType,
+                            ParentPath = subNode.ParentPath,
+                            IsTerminal = subNode.IsRootEnd,
+                            DataType = subNode.DataType
+                        });
+                    }
+
+                });
+
+            });
+        }
+
         /// <summary>
         /// 發生值變時回傳dictionary
         /// </summary>
@@ -155,3 +272,65 @@ namespace WPF_OPCUAConnection
         #endregion PropertyChangedEventHandler
     }
 }
+
+
+//if (listNodeStruct.IsRootEnd)
+//{
+//    var asdasd = listNodeStruct.SubNodeNames.Where(d => d.ParentPath == parent).ToList();
+
+//    asdasd.ForEach(asdf =>
+//    {
+//        for (int i = 0; i < listNodeStruct.LengthOfNode; i++)
+//        {
+
+//            a.Add(new NodeDataStruct() { NodeId = listNodeStruct.NodeID, NodeName = listNodeStruct.MainFolderName, NodePath = listNodeStruct.NodeID.ToString(), NodeType = listNodeStruct.NodeType, ParentPath = listNodeStruct.ParentPath, IsTerminal = listNodeStruct.IsRootEnd });
+//            listNodeStruct.SubNodeNames.ForEach(x =>
+//            {
+
+//                BuildingTree(new ListNodeStruct()
+//                {
+//                    NodeID = Convert.ToInt32(string.Format("{0}", x.NodeID.ToString())),
+//                    MainFolderName = x.MainFolderName,
+//                    ParentPath = string.Format("{0}", listNodeStruct.NodeID.ToString()),
+//                    NodeType = x.NodeType,
+//                    IsRootEnd = x.IsRootEnd,
+//                    LengthOfNode = x.LengthOfNode,
+//                    SubNodeNames = x.SubNodeNames
+//                }, string.Format("{0}", x.NodeID.ToString()));
+//            });
+//        }
+//    });
+//}
+//else
+//{
+//    for (int i = 0; i < listNodeStruct.LengthOfNode; i++)
+//    {
+//        a.Add(new NodeDataStruct()
+//        {
+//            NodeId = listNodeStruct.NodeID,
+//            NodeName = listNodeStruct.MainFolderName,
+//            NodePath = listNodeStruct.NodeID.ToString(),
+//            NodeType = listNodeStruct.NodeType,
+//            ParentPath = listNodeStruct.ParentPath,
+//            IsTerminal = listNodeStruct.IsRootEnd,
+//            DataType = listNodeStruct.DataType
+//        });
+//    }
+//}
+
+/*
+ 
+            new List<NodeDataStruct>()
+            {
+               new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
+               new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
+               new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
+               new NodeDataStruct(){NodeId=111,NodeName="PLC1_Connection",NodePath="111",NodeType=NodeType.Point,ParentPath="11", IsTerminal=true ,DataType =DataTypeIds.Boolean},
+               new NodeDataStruct(){NodeId=112,NodeName="PLC1_Point2",NodePath="112",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+               new NodeDataStruct(){NodeId=113,NodeName="PLC1_Point3",NodePath="113",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+               new NodeDataStruct(){NodeId=114,NodeName="PLC1_Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+               new NodeDataStruct(){NodeId=121,NodeName="PLC2_Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
+               new NodeDataStruct(){NodeId=122,NodeName="PLC2_Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
+            }
+ 
+ */

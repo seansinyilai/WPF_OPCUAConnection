@@ -9,6 +9,32 @@ namespace ToConnectOPCUA.Classes
 {
     public class ListNodeStruct
     {
+        private NodeType _nodeType;
+
+        public NodeType NodeType
+        {
+            get { return _nodeType; }
+            set { _nodeType = value; }
+        }
+
+        private string _parentPath;
+
+        public string ParentPath
+        {
+            get { return _parentPath; }
+            set { _parentPath = value; }
+        }
+
+
+        private int _nodeId;
+
+        public int NodeID
+        {
+            get { return _nodeId; }
+            set { _nodeId = value; }
+        }
+
+
         private string _MainFolderName;
 
         public string MainFolderName
@@ -16,17 +42,45 @@ namespace ToConnectOPCUA.Classes
             get { return _MainFolderName; }
             set { _MainFolderName = value; }
         }
-        private List<IfItIsFolderStruct> _SubNodeNames;
+        private bool _isRootEnd;
 
-        public List<IfItIsFolderStruct> SubNodeNames
+        public bool IsRootEnd
+        {
+            get { return _isRootEnd; }
+            set { _isRootEnd = value; }
+        }
+        private int _LengthOfNode;
+
+        public int LengthOfNode
+        {
+            get { return _LengthOfNode; }
+            set { _LengthOfNode = value; }
+        }
+
+        private List<ListNodeStruct> _SubNodeNames;
+
+        public List<ListNodeStruct> SubNodeNames
         {
             get { return _SubNodeNames; }
             set { _SubNodeNames = value; }
         }
-        public ListNodeStruct(string folderName, List<IfItIsFolderStruct> subNode)
+
+        private NodeId _DataType;
+
+        public NodeId DataType
+        {
+            get { return _DataType; }
+            set { _DataType = value; }
+        }
+        public ListNodeStruct()
+        {
+
+        }
+        public ListNodeStruct(string folderName,bool isFolder, List<ListNodeStruct> subNode)
         {
             MainFolderName = folderName;
             SubNodeNames = subNode;
+            IsRootEnd = isFolder;
         }
     }
     public class IfItIsFolderStruct
