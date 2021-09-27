@@ -67,7 +67,6 @@ namespace WPF_OPCUAConnection
                     ParentPath = "1",
                     NodeType = NodeType.PLC1 + i,
                     IsRootEnd = false,
-                    LengthOfNode = 1,
                 });
                 h = new List<ListNodeStruct>();
 
@@ -78,7 +77,6 @@ namespace WPF_OPCUAConnection
                     ParentPath = string.Format("{0}", g[i].NodeID),
                     NodeType = NodeType.Point,
                     IsRootEnd = true,
-                    LengthOfNode = g[i].LengthOfNode,
                     DataType = DataTypeIds.Boolean
                 });
                 h.Add(new ListNodeStruct()
@@ -88,7 +86,6 @@ namespace WPF_OPCUAConnection
                     ParentPath = string.Format("{0}", g[i].NodeID),
                     NodeType = NodeType.Point,
                     IsRootEnd = true,
-                    LengthOfNode = g[i].LengthOfNode,
                     DataType = DataTypeIds.Double
                 });
                 h.Add(new ListNodeStruct()
@@ -98,7 +95,6 @@ namespace WPF_OPCUAConnection
                     ParentPath = string.Format("{0}", g[i].NodeID),
                     NodeType = NodeType.Point,
                     IsRootEnd = true,
-                    LengthOfNode = g[i].LengthOfNode,
                     DataType = DataTypeIds.Double
                 });
                 h.Add(new ListNodeStruct()
@@ -108,8 +104,15 @@ namespace WPF_OPCUAConnection
                     ParentPath = string.Format("{0}", g[i].NodeID),
                     NodeType = NodeType.Point,
                     IsRootEnd = true,
-                    LengthOfNode = g[i].LengthOfNode,
                     DataType = DataTypeIds.Double
+                });
+                h.Add(new ListNodeStruct()
+                {
+                    NodeID = Convert.ToInt32(string.Format("{0}{1}", g[i].NodeID, idx + 6)),
+                    MainFolderName = "PLC" + (idx + 1) + "_Point6",
+                    ParentPath = string.Format("{0}", g[i].NodeID),
+                    NodeType = NodeType.Point,
+                    IsRootEnd = false,
                 });
                 g[i].SubNodeNames = h;
                 idx++;
@@ -122,7 +125,6 @@ namespace WPF_OPCUAConnection
                 ParentPath = string.Empty,
                 NodeType = NodeType.GRC,
                 IsRootEnd = false,
-                LengthOfNode = g.Count,
                 SubNodeNames = g
             });
             BuildingTree(ListOfMachine);
@@ -218,7 +220,6 @@ namespace WPF_OPCUAConnection
                             ParentPath = string.Format("{0}", listnode.NodeID.ToString()),
                             NodeType = subNode.NodeType,
                             IsRootEnd = subNode.IsRootEnd,
-                            LengthOfNode = subNode.LengthOfNode,
                             SubNodeNames = subNode.SubNodeNames
                         }
                         });

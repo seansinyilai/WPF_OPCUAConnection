@@ -49,13 +49,13 @@ namespace ToConnectOPCUA.Classes
             get { return _isRootEnd; }
             set { _isRootEnd = value; }
         }
-        private int _LengthOfNode;
+        //private int _LengthOfNode;
 
-        public int LengthOfNode
-        {
-            get { return _LengthOfNode; }
-            set { _LengthOfNode = value; }
-        }
+        //public int LengthOfNode
+        //{
+        //    get { return _LengthOfNode; }
+        //    set { _LengthOfNode = value; }
+        //}
 
         private List<ListNodeStruct> _SubNodeNames;
 
