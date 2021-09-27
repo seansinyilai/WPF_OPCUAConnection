@@ -21,7 +21,7 @@ namespace WPF_OPCUAConnection
     public class Connector : INotifyPropertyChanged
     {
         private static List<NodeDataStruct> retrunListOfNodes = new List<NodeDataStruct>();
-        private static List<ListNodeStruct> dfg ;
+        private static List<ListNodeStruct> dfg;
         List<ListNodeStruct> h;
 
 
@@ -53,9 +53,9 @@ namespace WPF_OPCUAConnection
             //var a = obj.GPPlantServer.GPPlantNodeManager.CreateTwoStateDiscreteItemVariable(null, "1" + "002", "002", "open", "close") as TwoStateDiscreteState;
             //obj.GPPlantServer.GPPlantObj.StartProcess.OnCallMethod(obj.GPPlantServer.GPPlantNodeManager.SystemContext, new MethodState(a), new List<object> { 1, 2 }, new List<object> { 3, 4 });
             //obj.GPPlantServer.GPPlantObj.StopProcess.OnCallMethod(obj.GPPlantServer.GPPlantNodeManager.SystemContext, new MethodState(a), new List<object> { 1, 2 }, new List<object> { 3, 4 });
-
-            #endregion
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
+            #endregion
+
             #region↓↓↓↓↓↓↓↓↓ 建立樹狀結構 ↓↓↓↓↓↓↓↓↓
             int idx = 0;
             List<ListNodeStruct> g = new List<ListNodeStruct>();
@@ -117,7 +117,7 @@ namespace WPF_OPCUAConnection
                 });
 
                 g[i].SubNodeNames = h;
-               
+
                 idx++;
             }
             for (int i = 0; i < 2; i++)
@@ -125,14 +125,14 @@ namespace WPF_OPCUAConnection
                 dfg = new List<ListNodeStruct>();
                 dfg.Add(new ListNodeStruct()
                 {
-                    NodeID =g[i].SubNodeNames[4].NodeID + i+1,
+                    NodeID = g[i].SubNodeNames[4].NodeID + i + 1,
                     MainFolderName = "PLC" + (idx + 1) + "_Point" + (7 + idx + 1),
                     ParentPath = string.Format("{0}", g[i].SubNodeNames[4].NodeID),
                     NodeType = NodeType.Point,
                     IsRootEnd = false,
                 });
                 g[i].SubNodeNames[4].SubNodeNames = dfg;
-            }           
+            }
 
             List<ListNodeStruct> ListOfMachine = new List<ListNodeStruct>();
             ListOfMachine.Add(new ListNodeStruct()
@@ -200,8 +200,6 @@ namespace WPF_OPCUAConnection
                 f.Add(2.36);
                 ReferenceNodeManagerObj.SetValues(d, e, f);
             }).Start();
-            #endregion
-
             //ReferenceNodeManagerObj.SetValue("PLC1_Connection", DataType.Boolean, false);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point2", DataType.Double, 2.36);
             //ReferenceNodeManagerObj.SetValue("PLC1_Point3", DataType.Double, 3.55);
@@ -215,8 +213,14 @@ namespace WPF_OPCUAConnection
             //    ReferenceNodeManagerObj.SetValue("PLC2_Point3", DataType.Double, 6.2);
             //    ReferenceNodeManagerObj.SetValue("PLC2_Point4", DataType.Double, 8.0);
             //}).Start();
+            #endregion
         }
 
+        #region 建構樹狀list       
+        /// <summary>
+        /// 給予定義好的樹狀List 透過此方法會幫忙建構
+        /// </summary>
+        /// <param name="listNodeStruct"></param>
         public void BuildingTree(List<ListNodeStruct> listNodeStruct)
         {
             listNodeStruct.ForEach(listnode =>
@@ -259,7 +263,9 @@ namespace WPF_OPCUAConnection
 
             });
         }
+        #endregion
 
+        #region 值變時回傳
         /// <summary>
         /// 發生值變時回傳dictionary
         /// </summary>
@@ -269,6 +275,8 @@ namespace WPF_OPCUAConnection
         {
             return true;
         }
+
+        #endregion
 
         private ServiceResult OnStopProcess(ISystemContext context, MethodState method, IList<object> inputArguments, IList<object> outputArguments)
         {
