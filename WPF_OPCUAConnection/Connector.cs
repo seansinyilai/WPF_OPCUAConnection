@@ -58,7 +58,6 @@ namespace WPF_OPCUAConnection
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
             #region↓↓↓↓↓↓↓↓↓ 建立樹狀結構 ↓↓↓↓↓↓↓↓↓
             int idx = 0;
-            int idx2 = 0;
             List<ListNodeStruct> g = new List<ListNodeStruct>();
             for (int i = 0; i < 2; i++)
             {
