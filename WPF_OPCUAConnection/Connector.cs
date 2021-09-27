@@ -20,13 +20,11 @@ namespace WPF_OPCUAConnection
 {
     public class Connector : INotifyPropertyChanged
     {
-        private static List<NodeDataStruct> retrunListOfNodes = new List<NodeDataStruct>();
-        private static List<ListNodeStruct> dfg;
+        #region Fields
+        List<ListNodeStruct> dfg;
         List<ListNodeStruct> h;
-
-
+        private static List<NodeDataStruct> retrunListOfNodes = new List<NodeDataStruct>();
         private OPCUA_Server _MyService;
-
         public OPCUA_Server MyService
         {
             get { return _MyService; }
@@ -43,6 +41,9 @@ namespace WPF_OPCUAConnection
                 return MyService?.RefServer?.NodeManager;
             }
         }
+        #endregion
+
+        #region CTOR       
         public Connector()
         {
             #region XML
@@ -215,6 +216,7 @@ namespace WPF_OPCUAConnection
             //}).Start();
             #endregion
         }
+        #endregion
 
         #region 建構樹狀list       
         /// <summary>
