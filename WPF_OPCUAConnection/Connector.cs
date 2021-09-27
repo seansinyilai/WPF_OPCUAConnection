@@ -20,7 +20,7 @@ namespace WPF_OPCUAConnection
 {
     public class Connector : INotifyPropertyChanged
     {
-        #region Fields
+        #region ↓↓↓↓↓↓↓↓↓ Fields ↓↓↓↓↓↓↓↓↓
         List<ListNodeStruct> dfg;
         List<ListNodeStruct> h;
         private static List<NodeDataStruct> retrunListOfNodes = new List<NodeDataStruct>();
@@ -41,12 +41,12 @@ namespace WPF_OPCUAConnection
                 return MyService?.RefServer?.NodeManager;
             }
         }
-        #endregion
+        #endregion ↑↑↑↑↑↑↑↑↑ Fields ↑↑↑↑↑↑↑↑↑
 
-        #region CTOR       
+        #region↓↓↓↓↓↓↓↓↓ CTOR ↓↓↓↓↓↓↓↓↓
         public Connector()
         {
-            #region XML
+            #region↓↓↓↓↓↓↓↓↓ XML ↓↓↓↓↓↓↓↓↓
             //OPC_UA_Server obj = new OPC_UA_Server(new GPPlantServer());
             //obj.GPPlantServer.GPPlantObj.Coater.PLC1.Connection.Value = false;
             //obj.GPPlantServer.GPPlantObj.StartProcess.OnCallMethod = new GenericMethodCalledEventHandler(OnStartProcess);
@@ -55,7 +55,7 @@ namespace WPF_OPCUAConnection
             //obj.GPPlantServer.GPPlantObj.StartProcess.OnCallMethod(obj.GPPlantServer.GPPlantNodeManager.SystemContext, new MethodState(a), new List<object> { 1, 2 }, new List<object> { 3, 4 });
             //obj.GPPlantServer.GPPlantObj.StopProcess.OnCallMethod(obj.GPPlantServer.GPPlantNodeManager.SystemContext, new MethodState(a), new List<object> { 1, 2 }, new List<object> { 3, 4 });
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
-            #endregion
+            #endregion↑↑↑↑↑↑↑↑↑ XML ↑↑↑↑↑↑↑↑↑
 
             #region↓↓↓↓↓↓↓↓↓ 建立樹狀結構 ↓↓↓↓↓↓↓↓↓
             int idx = 0;
@@ -147,18 +147,18 @@ namespace WPF_OPCUAConnection
             });
             BuildingTree(ListOfMachine);
             var asdsdafa = ListOfMachine;
-            #endregion
+            #endregion ↑↑↑↑↑↑↑↑↑ 建立樹狀結構 ↑↑↑↑↑↑↑↑↑
 
-            #region 開啟Server與連線
+            #region↓↓↓↓↓↓↓↓↓ 開啟Server與連線 ↓↓↓↓↓↓↓↓↓
             MyService = new OPCUA_Server(
            new ToConnectOPCUA.Classes.ReferenceServer<OpcuaNode>(
                retrunListOfNodes.ToList<OpcuaNode>()));
             ReferenceNodeManagerObj._actonDelegate = new Func<Dictionary<string, BaseDataVariableState>, bool>(GetNodeValue);
             ReferenceNodeManagerObj.CycleUpdateVal.IsBackground = true;
             ReferenceNodeManagerObj.CycleUpdateVal.Start();
-            #endregion
+            #endregion ↑↑↑↑↑↑↑↑↑ 開啟Server與連線 ↑↑↑↑↑↑↑↑↑
 
-            #region 給予數值
+            #region↓↓↓↓↓↓↓↓↓ 給予數值 ↓↓↓↓↓↓↓↓↓
             List<string> a = new List<string>();
             List<DataType> b = new List<DataType>();
             List<object> c = new List<object>();
@@ -214,11 +214,11 @@ namespace WPF_OPCUAConnection
             //    ReferenceNodeManagerObj.SetValue("PLC2_Point3", DataType.Double, 6.2);
             //    ReferenceNodeManagerObj.SetValue("PLC2_Point4", DataType.Double, 8.0);
             //}).Start();
-            #endregion
+            #endregion ↑↑↑↑↑↑↑↑↑ 給予數值 ↑↑↑↑↑↑↑↑↑
         }
-        #endregion
+        #endregion ↑↑↑↑↑↑↑↑↑ CTOR ↑↑↑↑↑↑↑↑↑
 
-        #region 建構樹狀list       
+        #region↓↓↓↓↓↓↓↓↓ 建構樹狀list ↓↓↓↓↓↓↓↓↓      
         /// <summary>
         /// 給予定義好的樹狀List 透過此方法會幫忙建構
         /// </summary>
@@ -265,9 +265,9 @@ namespace WPF_OPCUAConnection
 
             });
         }
-        #endregion
+        #endregion↑↑↑↑↑↑↑↑↑ 建構樹狀list ↑↑↑↑↑↑↑↑↑
 
-        #region 值變時回傳
+        #region↓↓↓↓↓↓↓↓↓ 值變時回傳 ↓↓↓↓↓↓↓↓↓
         /// <summary>
         /// 發生值變時回傳dictionary
         /// </summary>
@@ -278,7 +278,7 @@ namespace WPF_OPCUAConnection
             return true;
         }
 
-        #endregion
+        #endregion↑↑↑↑↑↑↑↑↑ 值變時回傳 ↑↑↑↑↑↑↑↑↑
 
         private ServiceResult OnStopProcess(ISystemContext context, MethodState method, IList<object> inputArguments, IList<object> outputArguments)
         {
@@ -290,30 +290,28 @@ namespace WPF_OPCUAConnection
             return ServiceResult.Good;
         }
 
-        #region PropertyChangedEventHandler
+        #region ↓↓↓↓↓↓↓↓↓ PropertyChangedEventHandler ↓↓↓↓↓↓↓↓↓
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion PropertyChangedEventHandler
+        #endregion ↑↑↑↑↑↑↑↑↑ PropertyChangedEventHandler ↑↑↑↑↑↑↑↑↑
     }
 }
-
-/*
- 
-            new List<NodeDataStruct>()
-            {
-               new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
-               new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
-               new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
-               new NodeDataStruct(){NodeId=111,NodeName="PLC1_Connection",NodePath="111",NodeType=NodeType.Point,ParentPath="11", IsTerminal=true ,DataType =DataTypeIds.Boolean},
-               new NodeDataStruct(){NodeId=112,NodeName="PLC1_Point2",NodePath="112",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-               new NodeDataStruct(){NodeId=113,NodeName="PLC1_Point3",NodePath="113",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-               new NodeDataStruct(){NodeId=114,NodeName="PLC1_Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
-               new NodeDataStruct(){NodeId=121,NodeName="PLC2_Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
-               new NodeDataStruct(){NodeId=122,NodeName="PLC2_Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
-            }
+/* 
+   new List<NodeDataStruct>()
+   {
+      new NodeDataStruct(){NodeId=1,NodeName="GRC",NodePath="1",NodeType=NodeType.GRC,ParentPath="",IsTerminal=false },
+      new NodeDataStruct(){NodeId=11,NodeName="PLC1",NodePath="11",NodeType=NodeType.PLC1,ParentPath="1",IsTerminal=false },
+      new NodeDataStruct(){NodeId=12,NodeName="PLC2",NodePath="12",NodeType=NodeType.PLC2,ParentPath="1",IsTerminal=false},
+      new NodeDataStruct(){NodeId=111,NodeName="PLC1_Connection",NodePath="111",NodeType=NodeType.Point,ParentPath="11", IsTerminal=true ,DataType =DataTypeIds.Boolean},
+      new NodeDataStruct(){NodeId=112,NodeName="PLC1_Point2",NodePath="112",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+      new NodeDataStruct(){NodeId=113,NodeName="PLC1_Point3",NodePath="113",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+      new NodeDataStruct(){NodeId=114,NodeName="PLC1_Point4",NodePath="114",NodeType=NodeType.Point,ParentPath="11",IsTerminal=true ,DataType =DataTypeIds.Double},
+      new NodeDataStruct(){NodeId=121,NodeName="PLC2_Connection",NodePath="121",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Boolean},
+      new NodeDataStruct(){NodeId=122,NodeName="PLC2_Point2",NodePath="122",NodeType=NodeType.Point,ParentPath="12",IsTerminal=true ,DataType =DataTypeIds.Double}
+   }
  
  */
