@@ -291,51 +291,6 @@ namespace WPF_OPCUAConnection
     }
 }
 
-
-//if (listNodeStruct.IsRootEnd)
-//{
-//    var asdasd = listNodeStruct.SubNodeNames.Where(d => d.ParentPath == parent).ToList();
-
-//    asdasd.ForEach(asdf =>
-//    {
-//        for (int i = 0; i < listNodeStruct.LengthOfNode; i++)
-//        {
-
-//            a.Add(new NodeDataStruct() { NodeId = listNodeStruct.NodeID, NodeName = listNodeStruct.MainFolderName, NodePath = listNodeStruct.NodeID.ToString(), NodeType = listNodeStruct.NodeType, ParentPath = listNodeStruct.ParentPath, IsTerminal = listNodeStruct.IsRootEnd });
-//            listNodeStruct.SubNodeNames.ForEach(x =>
-//            {
-
-//                BuildingTree(new ListNodeStruct()
-//                {
-//                    NodeID = Convert.ToInt32(string.Format("{0}", x.NodeID.ToString())),
-//                    MainFolderName = x.MainFolderName,
-//                    ParentPath = string.Format("{0}", listNodeStruct.NodeID.ToString()),
-//                    NodeType = x.NodeType,
-//                    IsRootEnd = x.IsRootEnd,
-//                    LengthOfNode = x.LengthOfNode,
-//                    SubNodeNames = x.SubNodeNames
-//                }, string.Format("{0}", x.NodeID.ToString()));
-//            });
-//        }
-//    });
-//}
-//else
-//{
-//    for (int i = 0; i < listNodeStruct.LengthOfNode; i++)
-//    {
-//        a.Add(new NodeDataStruct()
-//        {
-//            NodeId = listNodeStruct.NodeID,
-//            NodeName = listNodeStruct.MainFolderName,
-//            NodePath = listNodeStruct.NodeID.ToString(),
-//            NodeType = listNodeStruct.NodeType,
-//            ParentPath = listNodeStruct.ParentPath,
-//            IsTerminal = listNodeStruct.IsRootEnd,
-//            DataType = listNodeStruct.DataType
-//        });
-//    }
-//}
-
 /*
  
             new List<NodeDataStruct>()
