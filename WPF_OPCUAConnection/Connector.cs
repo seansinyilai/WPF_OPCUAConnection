@@ -21,6 +21,7 @@ namespace WPF_OPCUAConnection
     public class Connector : INotifyPropertyChanged
     {
         private static List<NodeDataStruct> retrunListOfNodes = new List<NodeDataStruct>();
+        private static List<ListNodeStruct> dfg ;
         List<ListNodeStruct> h;
 
 
@@ -57,6 +58,7 @@ namespace WPF_OPCUAConnection
             //  OPC_UAServerServices myService = new OPC_UAServerServices(new OPCUA_MethodOfCoding.Classes.ReferenceServer());
             #region↓↓↓↓↓↓↓↓↓ 建立樹狀結構 ↓↓↓↓↓↓↓↓↓
             int idx = 0;
+            int idx2 = 0;
             List<ListNodeStruct> g = new List<ListNodeStruct>();
             for (int i = 0; i < 2; i++)
             {
@@ -114,9 +116,25 @@ namespace WPF_OPCUAConnection
                     NodeType = NodeType.Point,
                     IsRootEnd = false,
                 });
+
                 g[i].SubNodeNames = h;
+               
                 idx++;
             }
+            for (int i = 0; i < 2; i++)
+            {
+                dfg = new List<ListNodeStruct>();
+                dfg.Add(new ListNodeStruct()
+                {
+                    NodeID =g[i].SubNodeNames[4].NodeID + i+1,
+                    MainFolderName = "PLC" + (idx + 1) + "_Point" + (7 + idx + 1),
+                    ParentPath = string.Format("{0}", g[i].SubNodeNames[4].NodeID),
+                    NodeType = NodeType.Point,
+                    IsRootEnd = false,
+                });
+                g[i].SubNodeNames[4].SubNodeNames = dfg;
+            }           
+
             List<ListNodeStruct> ListOfMachine = new List<ListNodeStruct>();
             ListOfMachine.Add(new ListNodeStruct()
             {
@@ -128,7 +146,7 @@ namespace WPF_OPCUAConnection
                 SubNodeNames = g
             });
             BuildingTree(ListOfMachine);
-
+            var asdsdafa = ListOfMachine;
             #endregion
 
             #region 開啟Server與連線
