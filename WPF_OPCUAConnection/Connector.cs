@@ -146,7 +146,7 @@ namespace WPF_OPCUAConnection
                 SubNodeNames = g
             });
             BuildingTree(ListOfMachine);
-            var asdsdafa = ListOfMachine;
+            var peekTest = retrunListOfNodes;
             #endregion ↑↑↑↑↑↑↑↑↑ 建立樹狀結構 ↑↑↑↑↑↑↑↑↑
 
             #region↓↓↓↓↓↓↓↓↓ 開啟Server與連線 ↓↓↓↓↓↓↓↓↓
